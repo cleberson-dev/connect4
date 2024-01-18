@@ -21,23 +21,6 @@ type PieceProps = {
   size?: "sm" | "base";
 };
 
-function Piece({ player, onClick, size = "base" }: PieceProps) {
-  return (
-    <div
-      onClick={onClick}
-      className={cls({
-        "inline-block border-2 border-solid border-black rounded-full group-hover:border-violet-500":
-          true,
-        "bg-transparent": player === null,
-        "bg-yellow-500": player === "1",
-        "bg-blue-500": player === "2",
-        "h-16 w-16": size === "base",
-        "h-8 w-8": size === "sm",
-      })}
-    ></div>
-  );
-}
-
 export default function Board() {
   const [currentPlayer, setCurrentPlayer] = useState<"1" | "2">("1");
   const [gameSlots, setGameSlots] = useState(slots);
@@ -64,6 +47,28 @@ export default function Board() {
 
   const isColFull = (colNumber: number) =>
     gameSlots[colNumber].lastIndexOf(null) === -1;
+
+  function Piece({ player, onClick, size = "base" }: PieceProps) {
+    const className = cls(
+      "inline-block border-2 border-solid border-black rounded-full group-hover:border-violet-500 group-hover:last",
+      {
+        "bg-transparent": player === null,
+        "bg-yellow-500": player === "1",
+        "bg-blue-500": player === "2",
+        "h-16 w-16": size === "base",
+        "h-8 w-8": size === "sm",
+        "group-hover:last-of-type:bg-yellow-200":
+          player === null && currentPlayer === "1",
+        "group-hover:last-of-type:bg-blue-200":
+          player === null && currentPlayer === "2",
+      }
+    );
+
+    if (player === null)
+      return <span onClick={onClick} className={className}></span>;
+
+    return <div onClick={onClick} className={className}></div>;
+  }
 
   return (
     <>
