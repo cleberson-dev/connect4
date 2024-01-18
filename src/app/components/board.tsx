@@ -1,12 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import cls from "classnames";
 
 const COLS = 7;
 const ROWS = 6;
 
-const slots: ("1" | "2" | null)[][] = [];
+type Player = "1" | "2" | null;
+
+const slots: Player[][] = [];
 
 for (let i = 0; i < COLS; i += 1) {
   slots[i] = [];
@@ -25,7 +27,12 @@ type Direction =
   | "downLeft"
   | "downRight";
 
-const whoWon = (slots: ("1" | "2" | null)[][]): "1" | "2" | null => {
+type WinnerCheckerResults = {
+  player: "1" | "2";
+  coords: [number, number][];
+} | null;
+
+const whoWon = (slots: Player[][]): WinnerCheckerResults => {
   for (let i = 0; i < COLS; i += 1) {
     for (let j = 0; j < ROWS; j += 1) {
       const player = slots[i][j];
@@ -36,10 +43,15 @@ const whoWon = (slots: ("1" | "2" | null)[][]): "1" | "2" | null => {
         i: number,
         j: number,
         count = 1,
-        direction?: Direction
-      ): "1" | "2" | null => {
+        direction?: Direction,
+        coords: [number, number][] = []
+      ): WinnerCheckerResults => {
         if (player !== slots[i]?.[j]) return null;
-        if (count === 4) return player;
+        if (count === 4)
+          return {
+            player,
+            coords,
+          };
 
         const newCount = count + 1;
 
@@ -55,30 +67,34 @@ const whoWon = (slots: ("1" | "2" | null)[][]): "1" | "2" | null => {
         } as const;
 
         if (count === 1) {
-          return Object.entries(directions).reduce<"1" | "2" | null>(
+          return Object.entries(directions).reduce<WinnerCheckerResults>(
             (winner, [directionName, direction]) =>
-              winner ||
+              winner ??
               winMatcher(
                 player,
                 direction[0],
                 direction[1],
                 newCount,
-                directionName as Direction
+                directionName as Direction,
+                [...coords, [direction[0], direction[1]]]
               ),
             null
           );
         }
 
+        const directionIndices = directions[direction!];
+
         return winMatcher(
           player,
-          directions[direction!][0],
-          directions[direction!][1],
+          directionIndices[0],
+          directionIndices[1],
           newCount,
-          direction!
+          direction!,
+          [...coords, [directionIndices[0], directionIndices[1]]]
         );
       };
 
-      const winner = winMatcher(player, i, j);
+      const winner = winMatcher(player, i, j, 1, undefined, [[i, j]]);
       if (winner !== null) return winner;
     }
   }
@@ -86,9 +102,10 @@ const whoWon = (slots: ("1" | "2" | null)[][]): "1" | "2" | null => {
 };
 
 type PieceProps = {
-  player: "1" | "2" | null;
+  player: Player;
   onClick?: () => void;
   size?: "sm" | "base";
+  highlighted?: boolean;
 };
 
 export default function Board() {
@@ -115,12 +132,19 @@ export default function Board() {
     changePlayer();
   };
 
-  console.log("Who Won? ", whoWon(gameSlots));
+  const gameWinner = whoWon(gameSlots);
+  const isGameOver = gameWinner !== null;
+
+  useEffect(() => {
+    if (isGameOver) {
+      alert(`Player ${gameWinner.player} won!`);
+    }
+  }, [isGameOver]);
 
   const isColFull = (colNumber: number) =>
     gameSlots[colNumber].lastIndexOf(null) === -1;
 
-  function Piece({ player, onClick, size = "base" }: PieceProps) {
+  function Piece({ player, onClick, size = "base", highlighted }: PieceProps) {
     const className = cls(
       "inline-block border-2 border-solid border-black rounded-full group-hover:border-violet-500 group-hover:last",
       {
@@ -133,6 +157,7 @@ export default function Board() {
           player === null && currentPlayer === "1",
         "group-hover:last-of-type:bg-blue-200":
           player === null && currentPlayer === "2",
+        "border-4 border-orange-500": highlighted,
       }
     );
 
@@ -147,14 +172,14 @@ export default function Board() {
       <div className="flex justify-between items-center gap-x-1 my-4 w-full fixed top-0 px-4 text-lg">
         <div
           className={cls("flex items-center gap-2 relative", {
-            "text-violet-500 font-bold": currentPlayer === "1",
+            "text-violet-500 font-bold": !isGameOver && currentPlayer === "1",
           })}
         >
           <Piece player="1" size="sm" />
           <span>Player 1</span>
           <strong
             className={cls("uppercase absolute -bottom-6 text-sm", {
-              hidden: currentPlayer === "2",
+              hidden: isGameOver || currentPlayer === "2",
             })}
           >
             Your Turn
@@ -162,14 +187,14 @@ export default function Board() {
         </div>
         <div
           className={cls("flex items-center gap-2", {
-            "text-violet-500 font-bold": currentPlayer === "2",
+            "text-violet-500 font-bold": !isGameOver && currentPlayer === "2",
           })}
         >
           <Piece player="2" size="sm" />
           <span>Player 2</span>
           <strong
             className={cls("uppercase absolute -bottom-6 right-4 text-sm", {
-              hidden: currentPlayer === "1",
+              hidden: isGameOver || currentPlayer === "1",
             })}
           >
             Your Turn
@@ -186,7 +211,22 @@ export default function Board() {
             onClick={() => !isColFull(colNumber) && markSlot(colNumber)}
           >
             {col.map((player, rowNumber) => (
-              <Piece key={rowNumber} player={player} />
+              <Piece
+                key={rowNumber}
+                player={player}
+                highlighted={
+                  !!(
+                    player &&
+                    gameWinner &&
+                    gameWinner.player === player &&
+                    gameWinner.coords.some(
+                      (gameWinnerCoords) =>
+                        gameWinnerCoords.toString() ===
+                        [colNumber, rowNumber].toString()
+                    )
+                  )
+                }
+              />
             ))}
           </div>
         ))}
