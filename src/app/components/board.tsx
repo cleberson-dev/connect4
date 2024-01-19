@@ -145,24 +145,24 @@ export default function Board() {
     gameSlots[colNumber].lastIndexOf(null) === -1;
 
   function Piece({ player, onClick, size = "base", highlighted }: PieceProps) {
+    const isEmpty = player === null;
     const className = cls(
-      "inline-block border-2 border-solid border-black rounded-full group-hover:border-violet-500 group-hover:last",
+      "inline-block border-2 border-solid border-black rounded-full group-hover:last",
       {
-        "bg-transparent": player === null,
+        "bg-slate-200": isEmpty,
         "bg-yellow-500": player === "1",
-        "bg-blue-500": player === "2",
+        "bg-red-500": player === "2",
         "h-16 w-16": size === "base",
         "h-8 w-8": size === "sm",
-        "group-hover:last-of-type:bg-yellow-200":
-          player === null && currentPlayer === "1",
-        "group-hover:last-of-type:bg-blue-200":
-          player === null && currentPlayer === "2",
+        "group-hover:last-of-type:bg-yellow-200 group-hover:border-yellow-500":
+          isEmpty && currentPlayer === "1",
+        "group-hover:last-of-type:bg-red-200 group-hover:border-red-500":
+          isEmpty && currentPlayer === "2",
         "border-4 border-orange-500": highlighted,
       }
     );
 
-    if (player === null)
-      return <span onClick={onClick} className={className}></span>;
+    if (isEmpty) return <span onClick={onClick} className={className}></span>;
 
     return <div onClick={onClick} className={className}></div>;
   }
@@ -201,7 +201,7 @@ export default function Board() {
           </strong>
         </div>
       </div>
-      <div className="bg-black/5 rounded shadow flex gap-8 p-4">
+      <div className="bg-blue-700 rounded shadow flex gap-8 p-4">
         {gameSlots.map((col, colNumber) => (
           <div
             key={colNumber}
