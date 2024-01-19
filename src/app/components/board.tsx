@@ -106,6 +106,7 @@ type PieceProps = {
   onClick?: () => void;
   size?: "sm" | "base";
   highlighted?: boolean;
+  isGameOver?: boolean;
 };
 
 export default function Board() {
@@ -144,10 +145,16 @@ export default function Board() {
   const isColFull = (colNumber: number) =>
     gameSlots[colNumber].lastIndexOf(null) === -1;
 
-  function Piece({ player, onClick, size = "base", highlighted }: PieceProps) {
+  function Piece({
+    player,
+    onClick,
+    size = "base",
+    highlighted,
+    isGameOver,
+  }: PieceProps) {
     const isEmpty = player === null;
     const className = cls(
-      "inline-block border-2 border-solid border-black rounded-full group-hover:last",
+      "inline-block border-3 border-solid border-black rounded-full",
       {
         "bg-slate-200": isEmpty,
         "bg-yellow-500": player === "1",
@@ -155,10 +162,10 @@ export default function Board() {
         "h-16 w-16": size === "base",
         "h-8 w-8": size === "sm",
         "group-hover:last-of-type:bg-yellow-200 group-hover:border-yellow-500":
-          isEmpty && currentPlayer === "1",
+          !isGameOver && isEmpty && currentPlayer === "1",
         "group-hover:last-of-type:bg-red-200 group-hover:border-red-500":
-          isEmpty && currentPlayer === "2",
-        "border-4 border-orange-500": highlighted,
+          !isGameOver && isEmpty && currentPlayer === "2",
+        "border-4": highlighted,
       }
     );
 
@@ -206,14 +213,17 @@ export default function Board() {
           <div
             key={colNumber}
             className={cls("flex flex-col group gap-6", {
-              "cursor-pointer": !isColFull(colNumber),
+              "cursor-pointer": !isColFull(colNumber) && !isGameOver,
             })}
-            onClick={() => !isColFull(colNumber) && markSlot(colNumber)}
+            onClick={() =>
+              !isGameOver && !isColFull(colNumber) && markSlot(colNumber)
+            }
           >
             {col.map((player, rowNumber) => (
               <Piece
                 key={rowNumber}
                 player={player}
+                isGameOver={isGameOver}
                 highlighted={
                   !!(
                     player &&
