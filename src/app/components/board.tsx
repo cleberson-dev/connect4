@@ -204,6 +204,12 @@ export default function Board() {
             Your Turn
           </strong>
         </div>
+        <button
+          onClick={restartGame}
+          className="bg-slate-300 rounded shadow-sm hover:shadow text-xs px-3 py-2 font-semibold"
+        >
+          Restart Game
+        </button>
         <div
           className={cls("flex items-center gap-2", {
             "text-violet-500 font-bold": !isGameOver && currentPlayer === "2",
@@ -218,6 +224,7 @@ export default function Board() {
           >
             Your Turn
           </strong>
+          b
         </div>
       </div>
       <div className="bg-blue-700 rounded shadow flex gap-8 p-4">
