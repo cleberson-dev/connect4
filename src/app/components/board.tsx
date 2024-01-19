@@ -8,14 +8,16 @@ const ROWS = 6;
 
 type Player = "1" | "2" | null;
 
-const slots: Player[][] = [];
-
-for (let i = 0; i < COLS; i += 1) {
-  slots[i] = [];
-  for (let j = 0; j < ROWS; j += 1) {
-    slots[i][j] = null;
+const createFreshSlots = (cols = COLS, rows = ROWS) => {
+  const slots: Player[][] = [];
+  for (let i = 0; i < COLS; i += 1) {
+    slots[i] = [];
+    for (let j = 0; j < ROWS; j += 1) {
+      slots[i][j] = null;
+    }
   }
-}
+  return slots;
+};
 
 type Direction =
   | "up"
@@ -111,7 +113,12 @@ type PieceProps = {
 
 export default function Board() {
   const [currentPlayer, setCurrentPlayer] = useState<"1" | "2">("1");
-  const [gameSlots, setGameSlots] = useState(slots);
+  const [gameSlots, setGameSlots] = useState(createFreshSlots());
+
+  const restartGame = () => {
+    setGameSlots(createFreshSlots());
+    setCurrentPlayer("1");
+  };
 
   const changePlayer = () =>
     setCurrentPlayer((previousPlayer) => (previousPlayer === "1" ? "2" : "1"));
@@ -137,9 +144,14 @@ export default function Board() {
   const isGameOver = gameWinner !== null;
 
   useEffect(() => {
+    let timeout: any;
     if (isGameOver) {
       alert(`Player ${gameWinner.player} won!`);
+      timeout = setTimeout(() => {
+        restartGame();
+      }, 5000);
     }
+    return () => clearTimeout(timeout);
   }, [isGameOver]);
 
   const isColFull = (colNumber: number) =>
