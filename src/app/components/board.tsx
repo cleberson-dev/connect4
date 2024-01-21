@@ -1,5 +1,5 @@
 import cls from "classnames";
-import { Player, Slots, WinnerCheckerResults } from "../hooks/useGame";
+import { Player, Slots, WinnerCheckerResults } from "../types";
 import Piece from "./piece";
 
 type BoardProps = {
@@ -20,15 +20,13 @@ export default function Board({
   const isColFull = (colNumber: number) =>
     slots[colNumber].lastIndexOf(null) === -1;
   const isPieceHighlighted = (
-    player: Player,
+    player: Player | null,
     colNumber: number,
     rowNumber: number
   ) =>
     !!(
-      player &&
-      gameWinner &&
-      gameWinner.player === player &&
-      gameWinner.coords.some(
+      gameWinner?.player === player &&
+      gameWinner?.coords.some(
         (gameWinnerCoords) =>
           gameWinnerCoords.toString() === [colNumber, rowNumber].toString()
       )

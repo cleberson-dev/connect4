@@ -1,8 +1,8 @@
 import cls from "classnames";
-import { Player } from "../hooks/useGame";
+import { Player } from "../types";
 
 type PieceProps = {
-  player: Player;
+  player: Player | null;
   currentPlayer?: Player;
   onClick?: () => void;
   size?: "sm" | "base";
@@ -11,13 +11,15 @@ type PieceProps = {
 };
 
 const hoverClassesByPlayer = {
-  "1": "group-hover:last-of-type:bg-yellow-200 group-hover:border-yellow-500",
-  "2": "group-hover:last-of-type:bg-red-200 group-hover:border-red-500",
+  [Player.ONE]:
+    "group-hover:last-of-type:bg-yellow-200 group-hover:border-yellow-500",
+  [Player.TWO]:
+    "group-hover:last-of-type:bg-red-200 group-hover:border-red-500",
 } as const;
 
 const classesByPlayer = {
-  "1": "bg-yellow-500",
-  "2": "bg-red-500",
+  [Player.ONE]: "bg-yellow-500",
+  [Player.TWO]: "bg-red-500",
 } as const;
 
 const classesBySize = {
