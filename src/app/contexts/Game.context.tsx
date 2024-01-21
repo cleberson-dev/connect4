@@ -1,7 +1,12 @@
 "use client";
 
-import { createContext, useCallback, useContext, useMemo } from "react";
-import { useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+} from "react";
 
 const COLS = 7;
 const ROWS = 6;
@@ -51,10 +56,10 @@ const createFreshSlots = (cols = COLS, rows = ROWS) => {
 
 const getAllDirections = ([i, j]: [number, number]) => {
   return {
-    [Direction.LEFT]: [i - 1, j],
-    [Direction.RIGHT]: [i + 1, j],
     [Direction.UP]: [i, j - 1],
     [Direction.DOWN]: [i, j + 1],
+    [Direction.LEFT]: [i - 1, j],
+    [Direction.RIGHT]: [i + 1, j],
     [Direction.UP_LEFT]: [i - 1, j - 1],
     [Direction.UP_RIGHT]: [i + 1, j - 1],
     [Direction.DOWN_LEFT]: [i - 1, j + 1],
@@ -62,39 +67,51 @@ const getAllDirections = ([i, j]: [number, number]) => {
   } as const;
 };
 
+type GameCheckerFn = (args: {
+  player: Player;
+  currentCoord: [number, number];
+  count?: number;
+  direction?: Direction;
+  lastCoords?: [number, number][];
+}) => WinnerCheckerResults | null;
+
 const checkGame = (slots: Slots) => {
-  const gameChecker = (
-    player: Player,
-    [i, j]: [number, number],
+  const gameChecker: GameCheckerFn = ({
+    player,
+    currentCoord: [i, j],
     count = 1,
-    direction?: Direction,
-    coords: [number, number][] = []
-  ): WinnerCheckerResults | null => {
-    if (player !== slots[i]?.[j]) return null;
-    if (count === 4) return { player, coords };
+    direction,
+    lastCoords = [],
+  }): WinnerCheckerResults | null => {
+    const isPlayersPiece = player === slots[i]?.[j];
+    if (!isPlayersPiece) return null;
+    if (count === 4) return { player, coords: lastCoords };
 
     const directions = getAllDirections([i, j]);
 
     if (count === 1) {
-      return Object.entries(directions).reduce<WinnerCheckerResults>(
+      return Object.entries(directions).reduce<WinnerCheckerResults | null>(
         (winner, [directionName, [col, row]]) =>
           winner ??
-          gameChecker(
+          gameChecker({
             player,
-            [col, row],
-            count + 1,
-            directionName as unknown as Direction,
-            [...coords, [col, row]]
-          ),
+            currentCoord: [col, row],
+            count: count + 1,
+            direction: directionName as unknown as Direction,
+            lastCoords: [...lastCoords, [col, row]],
+          }),
         null
       );
     }
 
     const [col, row] = directions[direction!];
-    return gameChecker(player, [col, row], count + 1, direction!, [
-      ...coords,
-      [col, row],
-    ]);
+    return gameChecker({
+      player,
+      currentCoord: [col, row],
+      count: count + 1,
+      direction: direction!,
+      lastCoords: [...lastCoords, [col, row]],
+    });
   };
 
   return gameChecker;
@@ -107,7 +124,13 @@ const whoWon = (slots: Slots): WinnerCheckerResults | null => {
       if (player === null) continue;
       const checkGameWithSlots = checkGame(slots);
 
-      const winner = checkGameWithSlots(player, [i, j], 1, undefined, [[i, j]]);
+      const winner = checkGameWithSlots({
+        player,
+        currentCoord: [i, j],
+        count: 1,
+        direction: undefined,
+        lastCoords: [[i, j]],
+      });
       if (winner !== null) return winner;
     }
   }
@@ -125,9 +148,7 @@ const GameContext = createContext<GameContextValues>({
 
 export const useGame = () => useContext(GameContext);
 
-export default function GameContextProvider({
-  children,
-}: React.PropsWithChildren) {
+function GameContextProvider({ children }: React.PropsWithChildren) {
   const [currentPlayer, setCurrentPlayer] = useState<Player>(Player.ONE);
   const [slots, setSlots] = useState(createFreshSlots());
 
@@ -182,3 +203,5 @@ export default function GameContextProvider({
     </GameContext.Provider>
   );
 }
+
+export default GameContextProvider;
