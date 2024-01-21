@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import cls from "classnames";
 
 import { useGame } from "./contexts/Game.context";
@@ -25,22 +25,23 @@ const className = {
 };
 
 const GameHud = () => {
-  const { currentPlayer, isGameOver, restartGame } = useGame();
+  const { turnPlayer, isGameOver, restartGame, player } = useGame();
 
   const isPlayersTurn = useCallback(
-    (player: Player) => !isGameOver && player === currentPlayer,
-    [isGameOver, currentPlayer]
+    (player: Player) => !isGameOver && player === turnPlayer,
+    [isGameOver, turnPlayer]
   );
 
   const turnText = useMemo(
     () => <strong className={className.turnText}>Your Turn</strong>,
     []
   );
+
   return (
     <div className={className.header}>
       <div className={className.playerArea(isPlayersTurn(Player.ONE))}>
-        <Piece player="1" size="sm" />
-        <span>Player 1</span>
+        <Piece player={Player.ONE} size="sm" />
+        <span>Player 1 {player === Player.ONE && `(YOU)`}</span>
         {isPlayersTurn(Player.ONE) && turnText}
       </div>
       <div className="absolute w-full h-full flex items-center justify-center">
@@ -58,7 +59,7 @@ const GameHud = () => {
         )} text-right`}
       >
         <Piece player={Player.TWO} size="sm" />
-        <span>Player 2</span>
+        <span>Player 2 {player === Player.TWO && `(YOU)`}</span>
         {isPlayersTurn(Player.TWO) && turnText}
       </div>
     </div>
@@ -67,13 +68,16 @@ const GameHud = () => {
 
 export default function Home() {
   const {
-    currentPlayer,
+    turnPlayer,
+    player,
     slots,
     gameWinner,
     isGameOver,
     markSlot,
     restartGame,
+    setPlayer,
   } = useGame();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let timeout: any;
@@ -86,17 +90,33 @@ export default function Home() {
     return () => clearTimeout(timeout);
   }, [isGameOver, gameWinner, restartGame]);
 
+  useEffect(() => {
+    const ws = new WebSocket("ws://localhost:8080");
+    ws.addEventListener("error", (err: any) => console.error(err));
+    ws.addEventListener("message", ({ data }) => {
+      const convertedData = JSON.parse(data);
+      if (convertedData.type === "START_GAME") {
+        setLoading(false);
+        setPlayer(convertedData.payload.player);
+      }
+    });
+    return () => ws.close();
+  }, []);
+
   return (
     <>
       <GameHud />
       <main className={className.main}>
-        <Board
-          currentPlayer={currentPlayer}
-          gameWinner={gameWinner}
-          slots={slots}
-          isGameOver={isGameOver}
-          onColumnClick={markSlot}
-        />
+        {!loading && (
+          <Board
+            isYourTurn={turnPlayer === player}
+            turnPlayer={turnPlayer}
+            gameWinner={gameWinner}
+            slots={slots}
+            isGameOver={isGameOver}
+            onColumnClick={markSlot}
+          />
+        )}
       </main>
     </>
   );

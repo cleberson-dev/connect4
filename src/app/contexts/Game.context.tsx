@@ -12,11 +12,14 @@ import { Direction, Player, Slots, WinnerCheckerResults } from "../types";
 
 type GameContextValues = {
   slots: Slots;
-  currentPlayer: Player;
+  turnPlayer: Player;
   gameWinner: WinnerCheckerResults | null;
   isGameOver: boolean;
+  player: Player | null;
   markSlot: (colNumber: number) => void;
   restartGame: () => void;
+  setTurnPlayer: (newPlayer: Player) => void;
+  setPlayer: (newPlayer: Player | null) => void;
 };
 
 const COLS = 7;
@@ -118,28 +121,31 @@ const whoWon = (slots: Slots): WinnerCheckerResults | null => {
 
 const GameContext = createContext<GameContextValues>({
   slots: [],
-  currentPlayer: Player.ONE,
+  turnPlayer: Player.ONE,
+  player: null,
   gameWinner: null,
   isGameOver: false,
   markSlot: () => {},
   restartGame: () => {},
+  setTurnPlayer: () => {},
+  setPlayer: () => {},
 });
 
 export const useGame = () => useContext(GameContext);
 
 function GameContextProvider({ children }: React.PropsWithChildren) {
-  const [currentPlayer, setCurrentPlayer] = useState<Player>(Player.ONE);
+  const [player, setPlayer] = useState<Player | null>(null);
+  const [turnPlayer, setTurnPlayer] = useState<Player>(Player.ONE);
   const [slots, setSlots] = useState(createFreshSlots());
 
   const restartGame = useCallback(() => {
     setSlots(createFreshSlots());
-    setCurrentPlayer(Player.ONE);
   }, []);
 
   const changePlayer = useCallback(
     () =>
-      setCurrentPlayer((previousPlayer) =>
-        previousPlayer === Player.ONE ? Player.TWO : Player.ONE
+      setTurnPlayer((previousTurnPlayer) =>
+        previousTurnPlayer === Player.ONE ? Player.TWO : Player.ONE
       ),
     []
   );
@@ -155,13 +161,13 @@ function GameContextProvider({ children }: React.PropsWithChildren) {
         const newColumn = selectedColumn.toSpliced(
           lastIndexOfNull,
           1,
-          currentPlayer
+          turnPlayer
         );
         return prevSlots.toSpliced(colNumber, 1, newColumn);
       });
       changePlayer();
     },
-    [currentPlayer, changePlayer]
+    [turnPlayer, changePlayer]
   );
 
   const gameWinner = useMemo(() => whoWon(slots), [slots]);
@@ -171,11 +177,14 @@ function GameContextProvider({ children }: React.PropsWithChildren) {
     <GameContext.Provider
       value={{
         slots,
-        currentPlayer,
+        turnPlayer,
+        player,
         gameWinner,
         isGameOver,
         markSlot,
         restartGame,
+        setTurnPlayer,
+        setPlayer,
       }}
     >
       {children}

@@ -4,15 +4,17 @@ import Piece from "./piece";
 
 type BoardProps = {
   slots: Slots;
-  currentPlayer: Player;
-  gameWinner: WinnerCheckerResults;
+  turnPlayer: Player;
+  isYourTurn: boolean;
+  gameWinner: WinnerCheckerResults | null;
   isGameOver?: boolean;
   onColumnClick?: (colNumber: number) => void;
 };
 
 export default function Board({
   slots,
-  currentPlayer,
+  turnPlayer,
+  isYourTurn,
   isGameOver,
   onColumnClick,
   gameWinner,
@@ -39,18 +41,23 @@ export default function Board({
           <div
             key={colNumber}
             className={cls("flex flex-col group gap-6", {
-              "cursor-pointer": !isColFull(colNumber) && !isGameOver,
+              "cursor-pointer":
+                !isColFull(colNumber) && !isGameOver && isYourTurn,
             })}
             onClick={() =>
-              !isGameOver && !isColFull(colNumber) && onColumnClick?.(colNumber)
+              !isGameOver &&
+              isYourTurn &&
+              !isColFull(colNumber) &&
+              onColumnClick?.(colNumber)
             }
           >
             {col.map((player, rowNumber) => (
               <Piece
                 key={rowNumber}
                 player={player}
-                currentPlayer={currentPlayer}
+                turnPlayer={turnPlayer}
                 isGameOver={isGameOver}
+                isYourTurn={isYourTurn}
                 highlighted={isPieceHighlighted(player, colNumber, rowNumber)}
               />
             ))}
