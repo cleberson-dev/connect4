@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import cls from "classnames";
 
 import { useGame } from "./contexts/Game.context";
@@ -33,7 +33,7 @@ const GameHud = () => {
   );
 
   const turnText = useMemo(
-    () => <strong className={className.turnText}>Your Turn</strong>,
+    () => <strong className={className.turnText}>Turn</strong>,
     []
   );
 
@@ -66,16 +66,21 @@ const GameHud = () => {
   );
 };
 
+let ws: WebSocket;
+
 export default function Home() {
   const {
     turnPlayer,
+    setTurnPlayer,
     player,
     slots,
+    setSlots,
     gameWinner,
     isGameOver,
     markSlot,
     restartGame,
     setPlayer,
+    updateSlot,
   } = useGame();
   const [loading, setLoading] = useState(true);
 
@@ -91,13 +96,22 @@ export default function Home() {
   }, [isGameOver, gameWinner, restartGame]);
 
   useEffect(() => {
-    const ws = new WebSocket("ws://localhost:8080");
+    ws = new WebSocket("ws://localhost:8080");
     ws.addEventListener("error", (err: any) => console.error(err));
     ws.addEventListener("message", ({ data }) => {
       const convertedData = JSON.parse(data);
-      if (convertedData.type === "START_GAME") {
+      if (convertedData.type === "JOIN_GAME") {
         setLoading(false);
         setPlayer(convertedData.payload.player);
+        setSlots(convertedData.payload.slots);
+      }
+
+      if (convertedData.type === "SET_PIECE") {
+        console.log("SET PIECE", convertedData);
+        updateSlot(convertedData.payload.coords, convertedData.payload.player);
+        setTurnPlayer(
+          convertedData.payload.player === Player.ONE ? Player.TWO : Player.ONE
+        );
       }
     });
     return () => ws.close();
@@ -114,7 +128,12 @@ export default function Home() {
             gameWinner={gameWinner}
             slots={slots}
             isGameOver={isGameOver}
-            onColumnClick={markSlot}
+            onColumnClick={(colNumber) => {
+              ws.send(
+                JSON.stringify({ type: "SET_PIECE", payload: { colNumber } })
+              );
+              markSlot(colNumber);
+            }}
           />
         )}
       </main>

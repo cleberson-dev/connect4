@@ -1,7 +1,19 @@
-import { WebSocketServer } from "ws";
+import { WebSocketServer, WebSocket } from "ws";
 import { Player, Slots } from "./types";
 
 const { WS_PORT: PORT } = process.env;
+
+const markSlot = (colNumber: number, player: Player) => {
+  const col = gameState.slots[colNumber];
+  const lastIndexOfNull = col.lastIndexOf(null);
+  if (lastIndexOfNull === -1) return;
+
+  col[lastIndexOfNull] = player;
+  gameState.turnPlayer =
+    gameState.turnPlayer === Player.ONE ? Player.TWO : Player.ONE;
+
+  return { player, coords: [colNumber, lastIndexOfNull] };
+};
 
 const createFreshSlots = (cols = 7, rows = 6) => {
   const slots: Slots = [];
@@ -17,27 +29,25 @@ const createFreshSlots = (cols = 7, rows = 6) => {
 type GameState = {
   slots: Slots;
   players: {
-    [Player.ONE]?: boolean;
-    [Player.TWO]?: boolean;
+    [Player.ONE]?: WebSocket;
+    [Player.TWO]?: WebSocket;
   };
+  turnPlayer: Player;
+  hasStarted: boolean;
 };
 
 const gameState: GameState = {
   slots: createFreshSlots(),
   players: {},
+  turnPlayer: Player.ONE,
+  hasStarted: false,
 };
-
-const slots = createFreshSlots();
 
 enum ActionType {
-  START_GAME = "START_GAME",
+  JOIN_GAME = "JOIN_GAME",
   GAME_IS_FULL = "GAME_IS_FULL",
+  SET_PIECE = "SET_PIECE",
 }
-
-type Message<T> = {
-  type: ActionType;
-  payload: T;
-};
 
 const server = new WebSocketServer({
   port: PORT ? +PORT : 8080,
@@ -57,21 +67,35 @@ server.on("connection", (ws) => {
   let player: Player;
   if (!gameState.players[Player.ONE]) {
     player = Player.ONE;
-    gameState.players[Player.ONE] = true;
+    gameState.players[Player.ONE] = ws;
+    gameState.hasStarted = !!gameState.players[Player.TWO];
   } else {
     player = Player.TWO;
-    gameState.players[Player.TWO] = true;
+    gameState.players[Player.TWO] = ws;
+    gameState.hasStarted = !!gameState.players[Player.ONE];
   }
 
-  sendMessage(ActionType.START_GAME, { slots, player });
+  sendMessage(ActionType.JOIN_GAME, { slots: gameState.slots, player });
 
   ws.on("error", console.error);
   ws.on("message", (data) => {
-    console.log(`Received: ${data}`);
+    const action = JSON.parse(`${data}`);
+    if (action.type === ActionType.SET_PIECE) {
+      const result = markSlot(action.payload.colNumber, player);
+      const otherPlayerConnection =
+        player === Player.ONE
+          ? gameState.players[Player.TWO]
+          : gameState.players[Player.ONE];
+      result &&
+        otherPlayerConnection?.send(
+          JSON.stringify({ type: ActionType.SET_PIECE, payload: result })
+        );
+    }
   });
 
   ws.on("close", () => {
-    gameState.players[player] = false;
+    delete gameState.players[player];
+    gameState.hasStarted = false;
   });
 
   function sendMessage(type: ActionType, payload?: any) {

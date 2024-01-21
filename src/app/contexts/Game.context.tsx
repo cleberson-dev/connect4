@@ -20,6 +20,8 @@ type GameContextValues = {
   restartGame: () => void;
   setTurnPlayer: (newPlayer: Player) => void;
   setPlayer: (newPlayer: Player | null) => void;
+  updateSlot: (coords: [number, number], player: Player) => void;
+  setSlots: (slots: Slots) => void;
 };
 
 const COLS = 7;
@@ -129,6 +131,8 @@ const GameContext = createContext<GameContextValues>({
   restartGame: () => {},
   setTurnPlayer: () => {},
   setPlayer: () => {},
+  updateSlot: () => {},
+  setSlots: () => {},
 });
 
 export const useGame = () => useContext(GameContext);
@@ -149,6 +153,12 @@ function GameContextProvider({ children }: React.PropsWithChildren) {
       ),
     []
   );
+
+  const updateSlot = ([col, row]: [number, number], player: Player) => {
+    setSlots((prevSlots) =>
+      prevSlots.toSpliced(col, 1, prevSlots[col].toSpliced(row, 1, player))
+    );
+  };
 
   const markSlot = useCallback(
     (colNumber: number) => {
@@ -185,6 +195,8 @@ function GameContextProvider({ children }: React.PropsWithChildren) {
         restartGame,
         setTurnPlayer,
         setPlayer,
+        updateSlot,
+        setSlots,
       }}
     >
       {children}
