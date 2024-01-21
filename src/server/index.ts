@@ -83,6 +83,7 @@ server.on("connection", (ws) => {
     player,
     opponentPlayer: opponentPlayerConnection ? opponentPlayer : null,
     turnPlayer: (gameState.turn % 2) + 1,
+    turn: gameState.turn,
   });
 
   opponentPlayerConnection?.send(
@@ -106,9 +107,10 @@ server.on("connection", (ws) => {
         opponentPlayerConnection?.send(
           JSON.stringify({
             type: ActionType.SET_PIECE,
-            payload: { coords: result.coords, player },
+            payload: { coords: result.coords, player, turn: gameState.turn },
           })
         );
+        break;
       case ActionType.RESTART_GAME:
         gameState.hasStarted = true;
         gameState.slots = createFreshSlots();
@@ -118,6 +120,7 @@ server.on("connection", (ws) => {
             type: ActionType.RESTART_GAME,
           })
         );
+        break;
       default:
         console.log("New event", action.type);
     }

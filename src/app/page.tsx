@@ -94,6 +94,8 @@ export default function Home() {
     setOpponentPlayer,
     changeTurnPlayer,
     opponentPlayer,
+    turn,
+    setTurn,
   } = useGame();
   useEffect(() => {
     ws = new WebSocket("ws://localhost:8080");
@@ -107,15 +109,22 @@ export default function Home() {
           setOpponentPlayer(action.payload.opponentPlayer);
           setSlots(action.payload.slots);
           setTurnPlayer(action.payload.turnPlayer);
+          setTurn(action.payload.turn);
+          break;
         case "SET_PIECE":
           updateSlot(action.payload.coords, action.payload.player);
           changeTurnPlayer();
+          setTurn(action.payload.turn);
+          break;
         case "RESTART_GAME":
           restartGame();
+          break;
         case "OPPONENT_JOINED":
           setOpponentPlayer(action.payload.opponentPlayer);
+          break;
         case "OPPONENT_LEFT":
           setOpponentPlayer(null);
+          break;
         default:
           console.log("New Event:", action);
       }
@@ -139,9 +148,13 @@ export default function Home() {
               JSON.stringify({ type: "SET_PIECE", payload: { colNumber } })
             );
             markSlot(colNumber);
+            setTurn(turn + 1);
           }}
         />
       </main>
+      <footer className="absolute bottom-0 py-2 w-full text-center">
+        <p>Turn {turn + 1}</p>
+      </footer>
     </>
   );
 }
