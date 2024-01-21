@@ -31,12 +31,14 @@ type GameState = {
     [Player.TWO]?: WebSocket;
   };
   hasStarted: boolean;
+  turn: number;
 };
 
 const gameState: GameState = {
   slots: createFreshSlots(),
   players: {},
   hasStarted: false,
+  turn: 0,
 };
 
 enum ActionType {
@@ -72,7 +74,11 @@ server.on("connection", (ws) => {
     gameState.hasStarted = !!gameState.players[Player.ONE];
   }
 
-  sendMessage(ActionType.JOIN_GAME, { slots: gameState.slots, player });
+  sendMessage(ActionType.JOIN_GAME, {
+    slots: gameState.slots,
+    player,
+    turnPlayer: (gameState.turn % 2) + 1,
+  });
 
   ws.on("error", console.error);
   ws.on("message", (data) => {
@@ -82,6 +88,8 @@ server.on("connection", (ws) => {
     if (action.type === ActionType.SET_PIECE) {
       const result = markSlot(action.payload.colNumber, player);
       if (!result) return;
+
+      gameState.turn += 1;
       opponentPlayerConnection?.send(
         JSON.stringify({
           type: ActionType.SET_PIECE,

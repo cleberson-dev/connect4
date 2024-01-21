@@ -95,6 +95,7 @@ export default function Home() {
         setLoading(false);
         setPlayer(convertedData.payload.player);
         setSlots(convertedData.payload.slots);
+        setTurnPlayer(convertedData.payload.turnPlayer);
       }
 
       if (convertedData.type === "SET_PIECE") {
