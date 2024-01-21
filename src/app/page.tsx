@@ -46,7 +46,10 @@ const GameHud = () => {
       </div>
       <div className="absolute w-full h-full flex items-center justify-center">
         <button
-          onClick={restartGame}
+          onClick={() => {
+            ws.send(JSON.stringify({ type: "RESTART_GAME" }));
+            restartGame();
+          }}
           className={className.restartButton}
           disabled={isGameOver}
         >

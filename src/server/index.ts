@@ -100,6 +100,7 @@ server.on("connection", (ws) => {
     if (action.type === ActionType.RESTART_GAME) {
       gameState.hasStarted = true;
       gameState.slots = createFreshSlots();
+      gameState.turn = 0;
       opponentPlayerConnection?.send(
         JSON.stringify({
           type: ActionType.RESTART_GAME,
