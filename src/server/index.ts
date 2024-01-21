@@ -1,10 +1,13 @@
 import { WebSocketServer, WebSocket } from "ws";
 import { Player, Slots } from "./types";
+import short from "short-uuid";
 
 const { WS_PORT: PORT } = process.env;
 
-const markSlot = (colNumber: number, player: Player) => {
-  const col = gameState.slots[colNumber];
+const rooms = new Map<string, GameState>();
+
+const markSlot = (slots: Slots, colNumber: number, player: Player) => {
+  const col = slots[colNumber];
   const lastIndexOfNull = col.lastIndexOf(null);
   if (lastIndexOfNull === -1) return;
 
@@ -30,24 +33,26 @@ type GameState = {
     [Player.ONE]?: WebSocket;
     [Player.TWO]?: WebSocket;
   };
-  hasStarted: boolean;
   turn: number;
 };
 
 const gameState: GameState = {
   slots: createFreshSlots(),
   players: {},
-  hasStarted: false,
   turn: 0,
 };
 
 enum ActionType {
-  JOIN_GAME = "JOIN_GAME",
-  GAME_IS_FULL = "GAME_IS_FULL",
+  ROOM_IS_FULL = "ROOM_IS_FULL",
   SET_PIECE = "SET_PIECE",
   RESTART_GAME = "RESTART_GAME",
   OPPONENT_LEFT = "OPPONENT_LEFT",
   OPPONENT_JOINED = "OPPONENT_JOINED",
+  CREATE_ROOM = "CREATE_ROOM",
+  ROOM_CREATED = "ROOM_CREATED",
+  JOIN_ROOM = "JOIN_ROOM",
+  JOINED_ROOM = "JOINED_ROOM",
+  ROOM_NOT_FOUND = "ROOM_NOT_FOUND",
 }
 
 const server = new WebSocketServer({
@@ -59,84 +64,107 @@ server.on("listening", () => {
 });
 
 server.on("connection", (ws) => {
-  if (gameState.players[Player.ONE] && gameState.players[Player.TWO]) {
-    sendMessage(ActionType.GAME_IS_FULL);
-    ws.close();
-    return;
-  }
-
+  let room: GameState | undefined;
   let player: Player;
-  if (!gameState.players[Player.ONE]) {
-    player = Player.ONE;
-    gameState.players[Player.ONE] = ws;
-    gameState.hasStarted = !!gameState.players[Player.TWO];
-  } else {
-    player = Player.TWO;
-    gameState.players[Player.TWO] = ws;
-    gameState.hasStarted = !!gameState.players[Player.ONE];
-  }
-
-  const opponentPlayer = player === Player.ONE ? Player.TWO : Player.ONE;
-  const opponentPlayerConnection = gameState.players[opponentPlayer];
-  sendMessage(ActionType.JOIN_GAME, {
-    slots: gameState.slots,
-    player,
-    opponentPlayer: opponentPlayerConnection ? opponentPlayer : null,
-    turnPlayer: (gameState.turn % 2) + 1,
-    turn: gameState.turn,
-  });
-
-  opponentPlayerConnection?.send(
-    JSON.stringify({
-      type: ActionType.OPPONENT_JOINED,
-      payload: { opponentPlayer },
-    })
-  );
 
   ws.on("error", console.error);
   ws.on("message", (data) => {
     const opponentPlayerConnection =
-      gameState.players[player === Player.ONE ? Player.TWO : Player.ONE];
+      room?.players[player === Player.ONE ? Player.TWO : Player.ONE];
     const action = JSON.parse(`${data}`);
+    console.log(action);
     switch (action.type) {
-      case ActionType.SET_PIECE:
-        const result = markSlot(action.payload.colNumber, player);
+      case ActionType.SET_PIECE: {
+        if (!room) return sendMessage(ActionType.ROOM_NOT_FOUND);
+
+        const result = markSlot(room.slots, action.payload.colNumber, player);
         if (!result) return;
 
-        gameState.turn += 1;
+        room.turn += 1;
         opponentPlayerConnection?.send(
           JSON.stringify({
             type: ActionType.SET_PIECE,
-            payload: { coords: result.coords, player, turn: gameState.turn },
+            payload: { coords: result.coords, player, turn: room.turn },
           })
         );
         break;
-      case ActionType.RESTART_GAME:
-        gameState.hasStarted = true;
-        gameState.slots = createFreshSlots();
-        gameState.turn = 0;
+      }
+      case ActionType.RESTART_GAME: {
+        if (!room) return sendMessage(ActionType.ROOM_NOT_FOUND);
+        room.slots = createFreshSlots();
+        room.turn = 0;
         opponentPlayerConnection?.send(
           JSON.stringify({
             type: ActionType.RESTART_GAME,
           })
         );
         break;
+      }
+      case ActionType.CREATE_ROOM: {
+        const roomId = short.generate();
+        rooms.set(roomId, {
+          slots: createFreshSlots(),
+          players: {},
+          turn: 0,
+        });
+        sendMessage(ActionType.ROOM_CREATED, { roomId });
+        break;
+      }
+      case ActionType.JOIN_ROOM: {
+        const { roomId } = action.payload;
+        room = rooms.get(roomId);
+        if (!room) {
+          sendMessage(ActionType.ROOM_NOT_FOUND);
+          break;
+        }
+        if (room.players[Player.ONE] && room.players[Player.TWO]) {
+          sendMessage(ActionType.ROOM_IS_FULL);
+          ws.close();
+          break;
+        }
+
+        if (!room.players[Player.ONE]) {
+          player = Player.ONE;
+          room.players[Player.ONE] = ws;
+        } else {
+          player = Player.TWO;
+          room.players[Player.TWO] = ws;
+        }
+
+        const opponentPlayer = player === Player.ONE ? Player.TWO : Player.ONE;
+        const opponentPlayerConnection = room.players[opponentPlayer];
+        sendMessage(ActionType.JOINED_ROOM, {
+          player,
+          opponentPlayer: opponentPlayerConnection ? opponentPlayer : null,
+          slots: room.slots,
+          turnPlayer: (room.turn % 2) + 1,
+          turn: room.turn,
+        });
+        opponentPlayerConnection?.send(
+          JSON.stringify({
+            type: ActionType.OPPONENT_JOINED,
+            payload: { opponentPlayer },
+          })
+        );
+        break;
+      }
       default:
         console.log("New event", action.type);
     }
   });
 
   ws.on("close", () => {
+    if (!player) return;
+
     const opponentPlayer = player === Player.ONE ? Player.TWO : Player.ONE;
-    const opponentPlayerConnection = gameState.players[opponentPlayer];
+    const opponentPlayerConnection = room?.players[opponentPlayer];
     opponentPlayerConnection?.send(
       JSON.stringify({
         type: ActionType.OPPONENT_LEFT,
       })
     );
 
-    delete gameState.players[player];
-    gameState.hasStarted = false;
+    delete room?.players[player];
   });
 
   function sendMessage(type: ActionType, payload?: any) {
