@@ -1,7 +1,19 @@
+"use client";
+
+import { createContext, useCallback, useContext, useMemo } from "react";
 import { useState } from "react";
 
 const COLS = 7;
 const ROWS = 6;
+
+type GameContextValues = {
+  slots: Slots;
+  currentPlayer: Player;
+  gameWinner: WinnerCheckerResults;
+  isGameOver: boolean;
+  markSlot: (colNumber: number) => void;
+  restartGame: () => void;
+};
 
 export type Direction =
   | "up"
@@ -102,44 +114,71 @@ const whoWon = (slots: Slots): WinnerCheckerResults => {
   return null;
 };
 
-export default function useGame() {
+const GameContext = createContext<GameContextValues>({
+  slots: [],
+  currentPlayer: null,
+  gameWinner: null,
+  isGameOver: false,
+  markSlot: () => {},
+  restartGame: () => {},
+});
+
+export const useGame = () => useContext(GameContext);
+
+export default function GameContextProvider({
+  children,
+}: React.PropsWithChildren) {
   const [currentPlayer, setCurrentPlayer] = useState<"1" | "2">("1");
-  const [gameSlots, setGameSlots] = useState(createFreshSlots());
+  const [slots, setSlots] = useState(createFreshSlots());
 
-  const restartGame = () => {
-    setGameSlots(createFreshSlots());
+  const restartGame = useCallback(() => {
+    setSlots(createFreshSlots());
     setCurrentPlayer("1");
-  };
+  }, []);
 
-  const changePlayer = () =>
-    setCurrentPlayer((previousPlayer) => (previousPlayer === "1" ? "2" : "1"));
+  const changePlayer = useCallback(
+    () =>
+      setCurrentPlayer((previousPlayer) =>
+        previousPlayer === "1" ? "2" : "1"
+      ),
+    []
+  );
 
-  const markSlot = (colNumber: number) => {
-    setGameSlots((prevGameSlots) => {
-      const selectedColumn = [...prevGameSlots[colNumber]];
-      const lastIndexOfNull = selectedColumn.lastIndexOf(null);
+  const markSlot = useCallback(
+    (colNumber: number) => {
+      setSlots((prevSlots) => {
+        const selectedColumn = [...prevSlots[colNumber]];
+        const lastIndexOfNull = selectedColumn.lastIndexOf(null);
 
-      if (lastIndexOfNull === -1) return prevGameSlots;
+        if (lastIndexOfNull === -1) return prevSlots;
 
-      const newColumn = selectedColumn.toSpliced(
-        lastIndexOfNull,
-        1,
-        currentPlayer
-      );
-      return prevGameSlots.toSpliced(colNumber, 1, newColumn);
-    });
-    changePlayer();
-  };
+        const newColumn = selectedColumn.toSpliced(
+          lastIndexOfNull,
+          1,
+          currentPlayer
+        );
+        return prevSlots.toSpliced(colNumber, 1, newColumn);
+      });
+      changePlayer();
+    },
+    [currentPlayer, changePlayer]
+  );
 
-  const gameWinner = whoWon(gameSlots);
-  const isGameOver = gameWinner !== null;
+  const gameWinner = useMemo(() => whoWon(slots), [slots]);
+  const isGameOver = useMemo(() => gameWinner !== null, [gameWinner]);
 
-  return {
-    gameSlots,
-    currentPlayer,
-    isGameOver,
-    gameWinner,
-    markSlot,
-    restartGame,
-  };
+  return (
+    <GameContext.Provider
+      value={{
+        slots,
+        currentPlayer,
+        gameWinner,
+        isGameOver,
+        markSlot,
+        restartGame,
+      }}
+    >
+      {children}
+    </GameContext.Provider>
+  );
 }
