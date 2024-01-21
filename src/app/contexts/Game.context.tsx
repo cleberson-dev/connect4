@@ -9,7 +9,7 @@ const ROWS = 6;
 type GameContextValues = {
   slots: Slots;
   currentPlayer: Player;
-  gameWinner: WinnerCheckerResults;
+  gameWinner: WinnerCheckerResults | null;
   isGameOver: boolean;
   markSlot: (colNumber: number) => void;
   restartGame: () => void;
@@ -36,7 +36,7 @@ export type Slots = (Player | null)[][];
 export type WinnerCheckerResults = {
   player: Player.ONE | Player.TWO;
   coords: [number, number][];
-} | null;
+};
 
 const createFreshSlots = (cols = COLS, rows = ROWS) => {
   const slots: Slots = [];
@@ -49,63 +49,65 @@ const createFreshSlots = (cols = COLS, rows = ROWS) => {
   return slots;
 };
 
-const whoWon = (slots: Slots): WinnerCheckerResults => {
+const getAllDirections = ([i, j]: [number, number]) => {
+  return {
+    [Direction.LEFT]: [i - 1, j],
+    [Direction.RIGHT]: [i + 1, j],
+    [Direction.UP]: [i, j - 1],
+    [Direction.DOWN]: [i, j + 1],
+    [Direction.UP_LEFT]: [i - 1, j - 1],
+    [Direction.UP_RIGHT]: [i + 1, j - 1],
+    [Direction.DOWN_LEFT]: [i - 1, j + 1],
+    [Direction.DOWN_RIGHT]: [i + 1, j + 1],
+  } as const;
+};
+
+const checkGame = (slots: Slots) => {
+  const gameChecker = (
+    player: Player,
+    [i, j]: [number, number],
+    count = 1,
+    direction?: Direction,
+    coords: [number, number][] = []
+  ): WinnerCheckerResults | null => {
+    if (player !== slots[i]?.[j]) return null;
+    if (count === 4) return { player, coords };
+
+    const directions = getAllDirections([i, j]);
+
+    if (count === 1) {
+      return Object.entries(directions).reduce<WinnerCheckerResults>(
+        (winner, [directionName, [col, row]]) =>
+          winner ??
+          gameChecker(
+            player,
+            [col, row],
+            count + 1,
+            directionName as unknown as Direction,
+            [...coords, [col, row]]
+          ),
+        null
+      );
+    }
+
+    const [col, row] = directions[direction!];
+    return gameChecker(player, [col, row], count + 1, direction!, [
+      ...coords,
+      [col, row],
+    ]);
+  };
+
+  return gameChecker;
+};
+
+const whoWon = (slots: Slots): WinnerCheckerResults | null => {
   for (let i = 0; i < COLS; i += 1) {
     for (let j = 0; j < ROWS; j += 1) {
       const player = slots[i][j];
       if (player === null) continue;
+      const checkGameWithSlots = checkGame(slots);
 
-      const winMatcher = (
-        player: Player,
-        [i, j]: [number, number],
-        count = 1,
-        direction?: Direction,
-        coords: [number, number][] = []
-      ): WinnerCheckerResults => {
-        if (player !== slots[i]?.[j]) return null;
-        if (count === 4)
-          return {
-            player,
-            coords,
-          };
-
-        const newCount = count + 1;
-
-        const directions = {
-          [Direction.LEFT]: [i - 1, j],
-          [Direction.RIGHT]: [i + 1, j],
-          [Direction.UP]: [i, j - 1],
-          [Direction.DOWN]: [i, j + 1],
-          [Direction.UP_LEFT]: [i - 1, j - 1],
-          [Direction.UP_RIGHT]: [i + 1, j - 1],
-          [Direction.DOWN_LEFT]: [i - 1, j + 1],
-          [Direction.DOWN_RIGHT]: [i + 1, j + 1],
-        } as const;
-
-        if (count === 1) {
-          return Object.entries(directions).reduce<WinnerCheckerResults>(
-            (winner, [directionName, [col, row]]) =>
-              winner ??
-              winMatcher(
-                player,
-                [col, row],
-                newCount,
-                directionName as unknown as Direction,
-                [...coords, [col, row]]
-              ),
-            null
-          );
-        }
-
-        const [col, row] = directions[direction!];
-
-        return winMatcher(player, [col, row], newCount, direction!, [
-          ...coords,
-          [col, row],
-        ]);
-      };
-
-      const winner = winMatcher(player, [i, j], 1, undefined, [[i, j]]);
+      const winner = checkGameWithSlots(player, [i, j], 1, undefined, [[i, j]]);
       if (winner !== null) return winner;
     }
   }
