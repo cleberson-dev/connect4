@@ -58,7 +58,6 @@ const GameHud = () => {
             restartGame();
           }}
           className={className.restartButton}
-          disabled={isGameOver}
         >
           Restart Game
         </button>
