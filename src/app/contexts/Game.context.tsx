@@ -16,12 +16,14 @@ type GameContextValues = {
   gameWinner: WinnerCheckerResults | null;
   isGameOver: boolean;
   player: Player | null;
+  opponentPlayer: Player | null;
   markSlot: (colNumber: number) => void;
   restartGame: () => void;
   setTurnPlayer: (newPlayer: Player) => void;
   setPlayer: (newPlayer: Player | null) => void;
   updateSlot: (coords: [number, number], player: Player) => void;
   setSlots: (slots: Slots) => void;
+  changeTurnPlayer: () => void;
 };
 
 const COLS = 7;
@@ -125,6 +127,7 @@ const GameContext = createContext<GameContextValues>({
   slots: [],
   turnPlayer: Player.ONE,
   player: null,
+  opponentPlayer: null,
   gameWinner: null,
   isGameOver: false,
   markSlot: () => {},
@@ -133,6 +136,7 @@ const GameContext = createContext<GameContextValues>({
   setPlayer: () => {},
   updateSlot: () => {},
   setSlots: () => {},
+  changeTurnPlayer: () => {},
 });
 
 export const useGame = () => useContext(GameContext);
@@ -142,11 +146,17 @@ function GameContextProvider({ children }: React.PropsWithChildren) {
   const [turnPlayer, setTurnPlayer] = useState<Player>(Player.ONE);
   const [slots, setSlots] = useState(createFreshSlots());
 
+  const opponentPlayer = useMemo(
+    () => (player === Player.ONE ? Player.TWO : Player.ONE),
+    [player]
+  );
+
   const restartGame = useCallback(() => {
     setSlots(createFreshSlots());
+    setTurnPlayer(Player.ONE);
   }, []);
 
-  const changePlayer = useCallback(
+  const changeTurnPlayer = useCallback(
     () =>
       setTurnPlayer((previousTurnPlayer) =>
         previousTurnPlayer === Player.ONE ? Player.TWO : Player.ONE
@@ -175,9 +185,9 @@ function GameContextProvider({ children }: React.PropsWithChildren) {
         );
         return prevSlots.toSpliced(colNumber, 1, newColumn);
       });
-      changePlayer();
+      changeTurnPlayer();
     },
-    [turnPlayer, changePlayer]
+    [turnPlayer, changeTurnPlayer]
   );
 
   const gameWinner = useMemo(() => whoWon(slots), [slots]);
@@ -197,6 +207,8 @@ function GameContextProvider({ children }: React.PropsWithChildren) {
         setPlayer,
         updateSlot,
         setSlots,
+        opponentPlayer,
+        changeTurnPlayer,
       }}
     >
       {children}

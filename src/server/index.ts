@@ -9,10 +9,8 @@ const markSlot = (colNumber: number, player: Player) => {
   if (lastIndexOfNull === -1) return;
 
   col[lastIndexOfNull] = player;
-  gameState.turnPlayer =
-    gameState.turnPlayer === Player.ONE ? Player.TWO : Player.ONE;
 
-  return { player, coords: [colNumber, lastIndexOfNull] };
+  return { coords: [colNumber, lastIndexOfNull] };
 };
 
 const createFreshSlots = (cols = 7, rows = 6) => {
@@ -32,14 +30,12 @@ type GameState = {
     [Player.ONE]?: WebSocket;
     [Player.TWO]?: WebSocket;
   };
-  turnPlayer: Player;
   hasStarted: boolean;
 };
 
 const gameState: GameState = {
   slots: createFreshSlots(),
   players: {},
-  turnPlayer: Player.ONE,
   hasStarted: false,
 };
 
@@ -47,6 +43,7 @@ enum ActionType {
   JOIN_GAME = "JOIN_GAME",
   GAME_IS_FULL = "GAME_IS_FULL",
   SET_PIECE = "SET_PIECE",
+  RESTART_GAME = "RESTART_GAME",
 }
 
 const server = new WebSocketServer({
@@ -79,17 +76,27 @@ server.on("connection", (ws) => {
 
   ws.on("error", console.error);
   ws.on("message", (data) => {
+    const opponentPlayerConnection =
+      gameState.players[player === Player.ONE ? Player.TWO : Player.ONE];
     const action = JSON.parse(`${data}`);
     if (action.type === ActionType.SET_PIECE) {
       const result = markSlot(action.payload.colNumber, player);
-      const otherPlayerConnection =
-        player === Player.ONE
-          ? gameState.players[Player.TWO]
-          : gameState.players[Player.ONE];
-      result &&
-        otherPlayerConnection?.send(
-          JSON.stringify({ type: ActionType.SET_PIECE, payload: result })
-        );
+      if (!result) return;
+      opponentPlayerConnection?.send(
+        JSON.stringify({
+          type: ActionType.SET_PIECE,
+          payload: { coords: result.coords, player },
+        })
+      );
+    }
+    if (action.type === ActionType.RESTART_GAME) {
+      gameState.hasStarted = true;
+      gameState.slots = createFreshSlots();
+      opponentPlayerConnection?.send(
+        JSON.stringify({
+          type: ActionType.RESTART_GAME,
+        })
+      );
     }
   });
 

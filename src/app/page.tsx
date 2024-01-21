@@ -81,19 +81,10 @@ export default function Home() {
     restartGame,
     setPlayer,
     updateSlot,
+    opponentPlayer,
+    changeTurnPlayer,
   } = useGame();
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    let timeout: any;
-    if (isGameOver) {
-      alert(`Player ${gameWinner!.player} won!`);
-      timeout = setTimeout(() => {
-        restartGame();
-      }, 5000);
-    }
-    return () => clearTimeout(timeout);
-  }, [isGameOver, gameWinner, restartGame]);
 
   useEffect(() => {
     ws = new WebSocket("ws://localhost:8080");
@@ -107,11 +98,12 @@ export default function Home() {
       }
 
       if (convertedData.type === "SET_PIECE") {
-        console.log("SET PIECE", convertedData);
         updateSlot(convertedData.payload.coords, convertedData.payload.player);
-        setTurnPlayer(
-          convertedData.payload.player === Player.ONE ? Player.TWO : Player.ONE
-        );
+        changeTurnPlayer();
+      }
+
+      if (convertedData.type === "RESTART_GAME") {
+        restartGame();
       }
     });
     return () => ws.close();
