@@ -76,14 +76,15 @@ server.on("connection", (ws) => {
     gameState.hasStarted = !!gameState.players[Player.ONE];
   }
 
+  const opponentPlayer = player === Player.ONE ? Player.TWO : Player.ONE;
+  const opponentPlayerConnection = gameState.players[opponentPlayer];
   sendMessage(ActionType.JOIN_GAME, {
     slots: gameState.slots,
     player,
+    opponentPlayer: opponentPlayerConnection ? opponentPlayer : null,
     turnPlayer: (gameState.turn % 2) + 1,
   });
 
-  const opponentPlayer = player === Player.ONE ? Player.TWO : Player.ONE;
-  const opponentPlayerConnection = gameState.players[opponentPlayer];
   opponentPlayerConnection?.send(
     JSON.stringify({
       type: ActionType.OPPONENT_JOINED,

@@ -9,6 +9,7 @@ type BoardProps = {
   gameWinner: WinnerCheckerResults | null;
   isGameOver?: boolean;
   onColumnClick?: (colNumber: number) => void;
+  playable?: boolean;
 };
 
 export default function Board({
@@ -18,6 +19,7 @@ export default function Board({
   isGameOver,
   onColumnClick,
   gameWinner,
+  playable = false,
 }: BoardProps) {
   const isColFull = (colNumber: number) =>
     slots[colNumber].lastIndexOf(null) === -1;
@@ -42,11 +44,12 @@ export default function Board({
             key={colNumber}
             className={cls("flex flex-col group gap-6", {
               "cursor-pointer":
-                !isColFull(colNumber) && !isGameOver && isYourTurn,
+                !isColFull(colNumber) && !isGameOver && isYourTurn && playable,
             })}
             onClick={() =>
               !isGameOver &&
               isYourTurn &&
+              playable &&
               !isColFull(colNumber) &&
               onColumnClick?.(colNumber)
             }
@@ -58,6 +61,7 @@ export default function Board({
                 turnPlayer={turnPlayer}
                 isGameOver={isGameOver}
                 isYourTurn={isYourTurn}
+                playable={playable}
                 highlighted={isPieceHighlighted(player, colNumber, rowNumber)}
               />
             ))}

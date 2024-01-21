@@ -94,6 +94,7 @@ export default function Home() {
     updateSlot,
     setOpponentPlayer,
     changeTurnPlayer,
+    opponentPlayer,
   } = useGame();
   useEffect(() => {
     ws = new WebSocket("ws://localhost:8080");
@@ -137,6 +138,7 @@ export default function Home() {
           gameWinner={gameWinner}
           slots={slots}
           isGameOver={isGameOver}
+          playable={!!(player && opponentPlayer)}
           onColumnClick={(colNumber) => {
             ws.send(
               JSON.stringify({ type: "SET_PIECE", payload: { colNumber } })
