@@ -63,7 +63,8 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
           setIsLoading(false);
           break;
         }
-        case "ROOM_NOT_FOUND": {
+        case "ROOM_NOT_FOUND":
+        case "ROOM_IS_FULL": {
           router.replace("/");
           break;
         }
@@ -113,7 +114,7 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
           isGameOver={isGameOver}
           playable={!!(player && opponentPlayer)}
           onColumnClick={(colNumber) => {
-            ws.send(
+            ws?.send(
               JSON.stringify({ type: "SET_PIECE", payload: { colNumber } })
             );
             markSlot(colNumber);
