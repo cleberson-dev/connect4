@@ -7,18 +7,19 @@
     "prestart": "npm run build",
     "start": "node .",
     "build": "tsc",
-    "dev": "concurrently \"tsc -w\" \"node .\""
+    "dev": "nodemon index.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "concurrently": "^8.2.2",
     "ws": "^8.16.0"
   },
   "devDependencies": {
     "@types/node": "^20.11.5",
     "@types/ws": "^8.5.10",
+    "nodemon": "^3.0.3",
+    "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
   }
 }
