@@ -46,6 +46,8 @@ enum ActionType {
   GAME_IS_FULL = "GAME_IS_FULL",
   SET_PIECE = "SET_PIECE",
   RESTART_GAME = "RESTART_GAME",
+  OPPONENT_LEFT = "OPPONENT_LEFT",
+  OPPONENT_JOINED = "OPPONENT_JOINED",
 }
 
 const server = new WebSocketServer({
@@ -80,6 +82,15 @@ server.on("connection", (ws) => {
     turnPlayer: (gameState.turn % 2) + 1,
   });
 
+  const opponentPlayer = player === Player.ONE ? Player.TWO : Player.ONE;
+  const opponentPlayerConnection = gameState.players[opponentPlayer];
+  opponentPlayerConnection?.send(
+    JSON.stringify({
+      type: ActionType.OPPONENT_JOINED,
+      payload: { opponentPlayer },
+    })
+  );
+
   ws.on("error", console.error);
   ws.on("message", (data) => {
     const opponentPlayerConnection =
@@ -110,6 +121,14 @@ server.on("connection", (ws) => {
   });
 
   ws.on("close", () => {
+    const opponentPlayer = player === Player.ONE ? Player.TWO : Player.ONE;
+    const opponentPlayerConnection = gameState.players[opponentPlayer];
+    opponentPlayerConnection?.send(
+      JSON.stringify({
+        type: ActionType.OPPONENT_LEFT,
+      })
+    );
+
     delete gameState.players[player];
     gameState.hasStarted = false;
   });

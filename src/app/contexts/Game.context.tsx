@@ -21,6 +21,7 @@ type GameContextValues = {
   restartGame: () => void;
   setTurnPlayer: (newPlayer: Player) => void;
   setPlayer: (newPlayer: Player | null) => void;
+  setOpponentPlayer: (opponentPlayer: Player | null) => void;
   updateSlot: (coords: [number, number], player: Player) => void;
   setSlots: (slots: Slots) => void;
   changeTurnPlayer: () => void;
@@ -137,6 +138,7 @@ const GameContext = createContext<GameContextValues>({
   updateSlot: () => {},
   setSlots: () => {},
   changeTurnPlayer: () => {},
+  setOpponentPlayer: () => {},
 });
 
 export const useGame = () => useContext(GameContext);
@@ -145,11 +147,7 @@ function GameContextProvider({ children }: React.PropsWithChildren) {
   const [player, setPlayer] = useState<Player | null>(null);
   const [turnPlayer, setTurnPlayer] = useState<Player>(Player.ONE);
   const [slots, setSlots] = useState(createFreshSlots());
-
-  const opponentPlayer = useMemo(
-    () => (player === Player.ONE ? Player.TWO : Player.ONE),
-    [player]
-  );
+  const [opponentPlayer, setOpponentPlayer] = useState<Player | null>(null);
 
   const restartGame = useCallback(() => {
     setSlots(createFreshSlots());
@@ -209,6 +207,7 @@ function GameContextProvider({ children }: React.PropsWithChildren) {
         setSlots,
         opponentPlayer,
         changeTurnPlayer,
+        setOpponentPlayer,
       }}
     >
       {children}

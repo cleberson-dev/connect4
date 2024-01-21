@@ -16,16 +16,18 @@ const className = {
   restartButton:
     "bg-slate-300 rounded shadow-sm hover:shadow text-xs px-3 py-2 font-semibold",
   main: "flex h-screen flex-col items-center justify-center",
-  playerArea: (isPlayersTurn: boolean = false) =>
+  playerArea: (isPlayersTurn: boolean = false, isUnavailable: boolean = true) =>
     cls(
       "flex items-center gap-2 relative",
-      isPlayersTurn && "text-violet-500 font-bold"
+      isPlayersTurn && "text-violet-500 font-bold",
+      isUnavailable && "opacity-10"
     ),
   turnText: "uppercase absolute -bottom-6 left-0 w-full text-sm",
 };
 
 const GameHud = () => {
-  const { turnPlayer, isGameOver, restartGame, player } = useGame();
+  const { turnPlayer, isGameOver, restartGame, player, opponentPlayer } =
+    useGame();
 
   const isPlayersTurn = useCallback(
     (player: Player) => !isGameOver && player === turnPlayer,
@@ -39,7 +41,12 @@ const GameHud = () => {
 
   return (
     <div className={className.header}>
-      <div className={className.playerArea(isPlayersTurn(Player.ONE))}>
+      <div
+        className={className.playerArea(
+          isPlayersTurn(Player.ONE),
+          opponentPlayer === null && player !== Player.ONE
+        )}
+      >
         <Piece player={Player.ONE} size="sm" />
         <span>Player 1 {player === Player.ONE && `(YOU)`}</span>
         {isPlayersTurn(Player.ONE) && turnText}
@@ -58,7 +65,8 @@ const GameHud = () => {
       </div>
       <div
         className={`${className.playerArea(
-          isPlayersTurn(Player.TWO)
+          isPlayersTurn(Player.TWO),
+          opponentPlayer === null && player !== Player.TWO
         )} text-right`}
       >
         <Piece player={Player.TWO} size="sm" />
@@ -84,19 +92,17 @@ export default function Home() {
     restartGame,
     setPlayer,
     updateSlot,
-    opponentPlayer,
+    setOpponentPlayer,
     changeTurnPlayer,
   } = useGame();
-  const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     ws = new WebSocket("ws://localhost:8080");
     ws.addEventListener("error", (err: any) => console.error(err));
     ws.addEventListener("message", ({ data }) => {
       const convertedData = JSON.parse(data);
       if (convertedData.type === "JOIN_GAME") {
-        setLoading(false);
         setPlayer(convertedData.payload.player);
+        setOpponentPlayer(convertedData.payload.opponentPlayer);
         setSlots(convertedData.payload.slots);
         setTurnPlayer(convertedData.payload.turnPlayer);
       }
@@ -109,6 +115,14 @@ export default function Home() {
       if (convertedData.type === "RESTART_GAME") {
         restartGame();
       }
+
+      if (convertedData.type === "OPPONENT_JOINED") {
+        setOpponentPlayer(convertedData.payload.opponentPlayer);
+      }
+
+      if (convertedData.type === "OPPONENT_LEFT") {
+        setOpponentPlayer(null);
+      }
     });
     return () => ws.close();
   }, []);
@@ -117,21 +131,19 @@ export default function Home() {
     <>
       <GameHud />
       <main className={className.main}>
-        {!loading && (
-          <Board
-            isYourTurn={turnPlayer === player}
-            turnPlayer={turnPlayer}
-            gameWinner={gameWinner}
-            slots={slots}
-            isGameOver={isGameOver}
-            onColumnClick={(colNumber) => {
-              ws.send(
-                JSON.stringify({ type: "SET_PIECE", payload: { colNumber } })
-              );
-              markSlot(colNumber);
-            }}
-          />
-        )}
+        <Board
+          isYourTurn={turnPlayer === player}
+          turnPlayer={turnPlayer}
+          gameWinner={gameWinner}
+          slots={slots}
+          isGameOver={isGameOver}
+          onColumnClick={(colNumber) => {
+            ws.send(
+              JSON.stringify({ type: "SET_PIECE", payload: { colNumber } })
+            );
+            markSlot(colNumber);
+          }}
+        />
       </main>
     </>
   );
