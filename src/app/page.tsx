@@ -1,85 +1,23 @@
 "use client";
 
-import { useCallback, useEffect, useMemo } from "react";
-import cls from "classnames";
+import { useEffect, useState } from "react";
 
-import { useGame } from "./contexts/Game.context";
+import { useGame } from "@/app/contexts/Game.context";
 
-import Board from "./components/board";
-import Piece from "./components/piece";
+import Board from "@/app/components/board";
+import GameHud from "@/app/components/game-hud";
+import { MoonLoader } from "react-spinners";
 
-import { Player } from "./types";
-
-const className = {
-  header:
-    "flex justify-between items-center gap-x-1 my-4 w-full fixed top-0 px-4 text-sm sm:text-lg",
-  restartButton:
-    "bg-slate-300 rounded shadow-sm hover:shadow text-xs px-3 py-2 font-semibold",
-  main: "flex h-[100svh] flex-col items-center justify-center",
-  playerArea: (isPlayersTurn: boolean = false, isUnavailable: boolean = true) =>
-    cls(
-      "flex items-center gap-1 sm:gap-2 relative",
-      isPlayersTurn && "text-violet-500 font-bold",
-      isUnavailable && "opacity-10"
-    ),
-  turnText:
-    "uppercase absolute -bottom-5 sm:-bottom-6 left-0 w-full text-xs sm:text-sm",
-};
-
-const GameHud = () => {
-  const { turnPlayer, isGameOver, restartGame, player, opponentPlayer } =
-    useGame();
-
-  const isPlayersTurn = useCallback(
-    (player: Player) => !isGameOver && player === turnPlayer,
-    [isGameOver, turnPlayer]
-  );
-
-  const turnText = useMemo(
-    () => <strong className={className.turnText}>Turn</strong>,
-    []
-  );
-
-  return (
-    <div className={className.header}>
-      <div
-        className={className.playerArea(
-          isPlayersTurn(Player.ONE),
-          opponentPlayer === null && player !== Player.ONE
-        )}
-      >
-        <Piece player={Player.ONE} size="sm" />
-        <span>Player 1 {player === Player.ONE && `(YOU)`}</span>
-        {isPlayersTurn(Player.ONE) && turnText}
-      </div>
-      <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center">
-        <button
-          onClick={() => {
-            ws.send(JSON.stringify({ type: "RESTART_GAME" }));
-            restartGame();
-          }}
-          className={className.restartButton}
-        >
-          Restart Game
-        </button>
-      </div>
-      <div
-        className={`${className.playerArea(
-          isPlayersTurn(Player.TWO),
-          opponentPlayer === null && player !== Player.TWO
-        )} text-right`}
-      >
-        <Piece player={Player.TWO} size="sm" />
-        <span>Player 2 {player === Player.TWO && `(YOU)`}</span>
-        {isPlayersTurn(Player.TWO) && turnText}
-      </div>
-    </div>
-  );
-};
+const Loading = () => (
+  <div className="z-50 fixed w-full h-full flex flex-col items-center justify-center">
+    <MoonLoader color="blue" />
+  </div>
+);
 
 let ws: WebSocket;
 
 export default function Home() {
+  const [isLoading, setIsLoading] = useState(true);
   const {
     turnPlayer,
     setTurnPlayer,
@@ -111,6 +49,7 @@ export default function Home() {
           setSlots(action.payload.slots);
           setTurnPlayer(action.payload.turnPlayer);
           setTurn(action.payload.turn);
+          setIsLoading(false);
           break;
         case "SET_PIECE":
           updateSlot(action.payload.coords, action.payload.player);
@@ -133,10 +72,17 @@ export default function Home() {
     return () => ws.close();
   }, []);
 
+  if (isLoading) return <Loading />;
+
   return (
     <>
-      <GameHud />
-      <main className={className.main}>
+      <GameHud
+        onRestart={() => {
+          ws.send(JSON.stringify({ type: "RESTART_GAME" }));
+          restartGame();
+        }}
+      />
+      <main className="flex h-[100svh] flex-col items-center justify-center">
         <Board
           isYourTurn={turnPlayer === player}
           turnPlayer={turnPlayer}
