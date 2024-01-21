@@ -15,15 +15,16 @@ type GameContextValues = {
   restartGame: () => void;
 };
 
-export type Direction =
-  | "up"
-  | "down"
-  | "left"
-  | "right"
-  | "upLeft"
-  | "upRight"
-  | "downLeft"
-  | "downRight";
+export enum Direction {
+  UP,
+  DOWN,
+  LEFT,
+  RIGHT,
+  UP_LEFT,
+  UP_RIGHT,
+  DOWN_LEFT,
+  DOWN_RIGHT,
+}
 
 export enum Player {
   ONE = 1,
@@ -56,8 +57,7 @@ const whoWon = (slots: Slots): WinnerCheckerResults => {
 
       const winMatcher = (
         player: Player,
-        i: number,
-        j: number,
+        [i, j]: [number, number],
         count = 1,
         direction?: Direction,
         coords: [number, number][] = []
@@ -72,45 +72,40 @@ const whoWon = (slots: Slots): WinnerCheckerResults => {
         const newCount = count + 1;
 
         const directions = {
-          left: [i - 1, j],
-          right: [i + 1, j],
-          up: [i, j - 1],
-          down: [i, j + 1],
-          upLeft: [i - 1, j - 1],
-          upRight: [i + 1, j - 1],
-          downLeft: [i - 1, j + 1],
-          downRight: [i + 1, j + 1],
+          [Direction.LEFT]: [i - 1, j],
+          [Direction.RIGHT]: [i + 1, j],
+          [Direction.UP]: [i, j - 1],
+          [Direction.DOWN]: [i, j + 1],
+          [Direction.UP_LEFT]: [i - 1, j - 1],
+          [Direction.UP_RIGHT]: [i + 1, j - 1],
+          [Direction.DOWN_LEFT]: [i - 1, j + 1],
+          [Direction.DOWN_RIGHT]: [i + 1, j + 1],
         } as const;
 
         if (count === 1) {
           return Object.entries(directions).reduce<WinnerCheckerResults>(
-            (winner, [directionName, direction]) =>
+            (winner, [directionName, [col, row]]) =>
               winner ??
               winMatcher(
                 player,
-                direction[0],
-                direction[1],
+                [col, row],
                 newCount,
-                directionName as Direction,
-                [...coords, [direction[0], direction[1]]]
+                directionName as unknown as Direction,
+                [...coords, [col, row]]
               ),
             null
           );
         }
 
-        const directionIndices = directions[direction!];
+        const [col, row] = directions[direction!];
 
-        return winMatcher(
-          player,
-          directionIndices[0],
-          directionIndices[1],
-          newCount,
-          direction!,
-          [...coords, [directionIndices[0], directionIndices[1]]]
-        );
+        return winMatcher(player, [col, row], newCount, direction!, [
+          ...coords,
+          [col, row],
+        ]);
       };
 
-      const winner = winMatcher(player, i, j, 1, undefined, [[i, j]]);
+      const winner = winMatcher(player, [i, j], 1, undefined, [[i, j]]);
       if (winner !== null) return winner;
     }
   }
