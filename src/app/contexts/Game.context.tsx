@@ -8,8 +8,7 @@ import {
   useState,
 } from "react";
 
-const COLS = 7;
-const ROWS = 6;
+import { Direction, Player, Slots, WinnerCheckerResults } from "../types";
 
 type GameContextValues = {
   slots: Slots;
@@ -20,28 +19,8 @@ type GameContextValues = {
   restartGame: () => void;
 };
 
-export enum Direction {
-  UP,
-  DOWN,
-  LEFT,
-  RIGHT,
-  UP_LEFT,
-  UP_RIGHT,
-  DOWN_LEFT,
-  DOWN_RIGHT,
-}
-
-export enum Player {
-  ONE = 1,
-  TWO = 2,
-}
-
-export type Slots = (Player | null)[][];
-
-export type WinnerCheckerResults = {
-  player: Player.ONE | Player.TWO;
-  coords: [number, number][];
-};
+const COLS = 7;
+const ROWS = 6;
 
 const createFreshSlots = (cols = COLS, rows = ROWS) => {
   const slots: Slots = [];

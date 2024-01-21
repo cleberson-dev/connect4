@@ -1,14 +1,18 @@
 "use client";
 
 import { useCallback, useEffect, useMemo } from "react";
+import cls from "classnames";
+
+import { useGame } from "./contexts/Game.context";
+
 import Board from "./components/board";
 import Piece from "./components/piece";
-import { Player, useGame } from "./contexts/Game.context";
-import cls from "classnames";
+
+import { Player } from "./types";
 
 const className = {
   header:
-    "flex justify-between items-center gap-x-1 my-4 w-full fixed top-0 px-4 text-lg relative",
+    "flex justify-between items-center gap-x-1 my-4 w-full fixed top-0 px-4 text-lg",
   restartButton:
     "bg-slate-300 rounded shadow-sm hover:shadow text-xs px-3 py-2 font-semibold",
   main: "flex h-screen flex-col items-center justify-center",
