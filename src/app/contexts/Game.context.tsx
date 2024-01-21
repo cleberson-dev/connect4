@@ -25,12 +25,15 @@ export type Direction =
   | "downLeft"
   | "downRight";
 
-export type Player = "1" | "2" | null;
+export enum Player {
+  ONE = 1,
+  TWO = 2,
+}
 
-export type Slots = Player[][];
+export type Slots = (Player | null)[][];
 
 export type WinnerCheckerResults = {
-  player: "1" | "2";
+  player: Player.ONE | Player.TWO;
   coords: [number, number][];
 } | null;
 
@@ -52,7 +55,7 @@ const whoWon = (slots: Slots): WinnerCheckerResults => {
       if (player === null) continue;
 
       const winMatcher = (
-        player: "1" | "2",
+        player: Player,
         i: number,
         j: number,
         count = 1,
@@ -116,7 +119,7 @@ const whoWon = (slots: Slots): WinnerCheckerResults => {
 
 const GameContext = createContext<GameContextValues>({
   slots: [],
-  currentPlayer: null,
+  currentPlayer: Player.ONE,
   gameWinner: null,
   isGameOver: false,
   markSlot: () => {},
@@ -128,18 +131,18 @@ export const useGame = () => useContext(GameContext);
 export default function GameContextProvider({
   children,
 }: React.PropsWithChildren) {
-  const [currentPlayer, setCurrentPlayer] = useState<"1" | "2">("1");
+  const [currentPlayer, setCurrentPlayer] = useState<Player>(Player.ONE);
   const [slots, setSlots] = useState(createFreshSlots());
 
   const restartGame = useCallback(() => {
     setSlots(createFreshSlots());
-    setCurrentPlayer("1");
+    setCurrentPlayer(Player.ONE);
   }, []);
 
   const changePlayer = useCallback(
     () =>
       setCurrentPlayer((previousPlayer) =>
-        previousPlayer === "1" ? "2" : "1"
+        previousPlayer === Player.ONE ? Player.TWO : Player.ONE
       ),
     []
   );

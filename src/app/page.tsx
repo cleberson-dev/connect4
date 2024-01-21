@@ -3,12 +3,12 @@
 import { useCallback, useEffect, useMemo } from "react";
 import Board from "./components/board";
 import Piece from "./components/piece";
-import { useGame } from "./contexts/Game.context";
+import { Player, useGame } from "./contexts/Game.context";
 import cls from "classnames";
 
 const className = {
   header:
-    "flex justify-between items-center gap-x-1 my-4 w-full fixed top-0 px-4 text-lg",
+    "flex justify-between items-center gap-x-1 my-4 w-full fixed top-0 px-4 text-lg relative",
   restartButton:
     "bg-slate-300 rounded shadow-sm hover:shadow text-xs px-3 py-2 font-semibold",
   main: "flex h-screen flex-col items-center justify-center",
@@ -24,7 +24,7 @@ const GameHud = () => {
   const { currentPlayer, isGameOver, restartGame } = useGame();
 
   const isPlayersTurn = useCallback(
-    (player: "1" | "2") => !isGameOver && player === currentPlayer,
+    (player: Player) => !isGameOver && player === currentPlayer,
     [isGameOver, currentPlayer]
   );
 
@@ -34,22 +34,28 @@ const GameHud = () => {
   );
   return (
     <div className={className.header}>
-      <div className={className.playerArea(isPlayersTurn("1"))}>
+      <div className={className.playerArea(isPlayersTurn(Player.ONE))}>
         <Piece player="1" size="sm" />
         <span>Player 1</span>
-        {isPlayersTurn("1") && turnText}
+        {isPlayersTurn(Player.ONE) && turnText}
       </div>
-      <button
-        onClick={restartGame}
-        className={className.restartButton}
-        disabled={isGameOver}
+      <div className="absolute w-full h-full flex items-center justify-center">
+        <button
+          onClick={restartGame}
+          className={className.restartButton}
+          disabled={isGameOver}
+        >
+          Restart Game
+        </button>
+      </div>
+      <div
+        className={`${className.playerArea(
+          isPlayersTurn(Player.TWO)
+        )} text-right`}
       >
-        Restart Game
-      </button>
-      <div className={`${className.playerArea(isPlayersTurn("2"))} text-right`}>
-        <Piece player="2" size="sm" />
+        <Piece player={Player.TWO} size="sm" />
         <span>Player 2</span>
-        {isPlayersTurn("2") && turnText}
+        {isPlayersTurn(Player.TWO) && turnText}
       </div>
     </div>
   );
@@ -74,7 +80,7 @@ export default function Home() {
       }, 5000);
     }
     return () => clearTimeout(timeout);
-  }, [isGameOver]);
+  }, [isGameOver, gameWinner, restartGame]);
 
   return (
     <>
