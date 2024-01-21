@@ -97,27 +97,29 @@ server.on("connection", (ws) => {
     const opponentPlayerConnection =
       gameState.players[player === Player.ONE ? Player.TWO : Player.ONE];
     const action = JSON.parse(`${data}`);
-    if (action.type === ActionType.SET_PIECE) {
-      const result = markSlot(action.payload.colNumber, player);
-      if (!result) return;
+    switch (action.type) {
+      case ActionType.SET_PIECE:
+        const result = markSlot(action.payload.colNumber, player);
+        if (!result) return;
 
-      gameState.turn += 1;
-      opponentPlayerConnection?.send(
-        JSON.stringify({
-          type: ActionType.SET_PIECE,
-          payload: { coords: result.coords, player },
-        })
-      );
-    }
-    if (action.type === ActionType.RESTART_GAME) {
-      gameState.hasStarted = true;
-      gameState.slots = createFreshSlots();
-      gameState.turn = 0;
-      opponentPlayerConnection?.send(
-        JSON.stringify({
-          type: ActionType.RESTART_GAME,
-        })
-      );
+        gameState.turn += 1;
+        opponentPlayerConnection?.send(
+          JSON.stringify({
+            type: ActionType.SET_PIECE,
+            payload: { coords: result.coords, player },
+          })
+        );
+      case ActionType.RESTART_GAME:
+        gameState.hasStarted = true;
+        gameState.slots = createFreshSlots();
+        gameState.turn = 0;
+        opponentPlayerConnection?.send(
+          JSON.stringify({
+            type: ActionType.RESTART_GAME,
+          })
+        );
+      default:
+        console.log("New event", action.type);
     }
   });
 

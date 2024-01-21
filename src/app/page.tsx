@@ -99,29 +99,25 @@ export default function Home() {
     ws = new WebSocket("ws://localhost:8080");
     ws.addEventListener("error", (err: any) => console.error(err));
     ws.addEventListener("message", ({ data }) => {
-      const convertedData = JSON.parse(data);
-      if (convertedData.type === "JOIN_GAME") {
-        setPlayer(convertedData.payload.player);
-        setOpponentPlayer(convertedData.payload.opponentPlayer);
-        setSlots(convertedData.payload.slots);
-        setTurnPlayer(convertedData.payload.turnPlayer);
-      }
+      const action = JSON.parse(data);
 
-      if (convertedData.type === "SET_PIECE") {
-        updateSlot(convertedData.payload.coords, convertedData.payload.player);
-        changeTurnPlayer();
-      }
-
-      if (convertedData.type === "RESTART_GAME") {
-        restartGame();
-      }
-
-      if (convertedData.type === "OPPONENT_JOINED") {
-        setOpponentPlayer(convertedData.payload.opponentPlayer);
-      }
-
-      if (convertedData.type === "OPPONENT_LEFT") {
-        setOpponentPlayer(null);
+      switch (action.type) {
+        case "JOIN_GAME":
+          setPlayer(action.payload.player);
+          setOpponentPlayer(action.payload.opponentPlayer);
+          setSlots(action.payload.slots);
+          setTurnPlayer(action.payload.turnPlayer);
+        case "SET_PIECE":
+          updateSlot(action.payload.coords, action.payload.player);
+          changeTurnPlayer();
+        case "RESTART_GAME":
+          restartGame();
+        case "OPPONENT_JOINED":
+          setOpponentPlayer(action.payload.opponentPlayer);
+        case "OPPONENT_LEFT":
+          setOpponentPlayer(null);
+        default:
+          console.log("New Event:", action);
       }
     });
     return () => ws.close();
