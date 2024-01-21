@@ -25,8 +25,8 @@ const classesByPlayer = {
 } as const;
 
 const classesBySize = {
-  base: "h-16 w-16",
-  sm: "h-8 w-8",
+  base: "h-8 w-8 sm:h-16 sm:w-16",
+  sm: "h-6 w-6 sm:h-8 sm:w-8",
 } as const;
 
 export default function Piece({

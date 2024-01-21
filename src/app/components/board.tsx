@@ -38,11 +38,11 @@ export default function Board({
 
   return (
     <>
-      <div className="bg-blue-700 rounded shadow flex gap-8 p-4">
+      <div className="bg-blue-700 rounded shadow flex gap-5 sm:gap-8 p-4 select-none">
         {slots.map((col, colNumber) => (
           <div
             key={colNumber}
-            className={cls("flex flex-col group gap-6", {
+            className={cls("flex flex-col group gap-3 sm:gap-6", {
               "cursor-pointer":
                 !isColFull(colNumber) && !isGameOver && isYourTurn && playable,
             })}

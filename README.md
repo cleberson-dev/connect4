@@ -33,6 +33,6 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 ## Further Features
 
 - An online game, be able to play against each other through internet.
-- Create a room, where other players can join and watch the game.
+- Create a room, where other players can join in and watch the game.
 - Room Queue, where players in line will have their opportunity to play as well.
 - Creata an option to only watch, or to join to play as well.

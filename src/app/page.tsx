@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import cls from "classnames";
 
 import { useGame } from "./contexts/Game.context";
@@ -12,17 +12,18 @@ import { Player } from "./types";
 
 const className = {
   header:
-    "flex justify-between items-center gap-x-1 my-4 w-full fixed top-0 px-4 text-lg",
+    "flex justify-between items-center gap-x-1 my-4 w-full fixed top-0 px-4 text-sm sm:text-lg",
   restartButton:
     "bg-slate-300 rounded shadow-sm hover:shadow text-xs px-3 py-2 font-semibold",
-  main: "flex h-screen flex-col items-center justify-center",
+  main: "flex h-[100svh] flex-col items-center justify-center",
   playerArea: (isPlayersTurn: boolean = false, isUnavailable: boolean = true) =>
     cls(
-      "flex items-center gap-2 relative",
+      "flex items-center gap-1 sm:gap-2 relative",
       isPlayersTurn && "text-violet-500 font-bold",
       isUnavailable && "opacity-10"
     ),
-  turnText: "uppercase absolute -bottom-6 left-0 w-full text-sm",
+  turnText:
+    "uppercase absolute -bottom-5 sm:-bottom-6 left-0 w-full text-xs sm:text-sm",
 };
 
 const GameHud = () => {
@@ -51,7 +52,7 @@ const GameHud = () => {
         <span>Player 1 {player === Player.ONE && `(YOU)`}</span>
         {isPlayersTurn(Player.ONE) && turnText}
       </div>
-      <div className="absolute w-full h-full flex items-center justify-center">
+      <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center">
         <button
           onClick={() => {
             ws.send(JSON.stringify({ type: "RESTART_GAME" }));
