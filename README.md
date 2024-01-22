@@ -22,9 +22,9 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 - Players take turns placing pieces on a vertical board
 - The board is 7x6
-- Each player has its own color (initial should be yellow and blue, but later can be customizable)
+- Each player has its own color (initial should be yellow and red, but later can be customizable)
 - The first player to get four pieces in a horizontal, vertical or diagonal line wins.
-- Since the board is vertical, parts inserted in a certain column will always fall in the lowest unoccupied row in that column.
+- Since the board is vertical, parts inserted in a certain column will always fall into the lowest unoccupied row in that column.
 - As soon as a column contains six pieces, it is full, and no further pieces can be placed.
 - If all the rows are full and neither player has four pieces in a row, the game is a tie.
 - Should be able to rematch.
