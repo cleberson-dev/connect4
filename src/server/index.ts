@@ -34,12 +34,7 @@ type GameState = {
     [Player.TWO]?: WebSocket;
   };
   turn: number;
-};
-
-const gameState: GameState = {
-  slots: createFreshSlots(),
-  players: {},
-  turn: 0,
+  spectators: WebSocket[];
 };
 
 enum ActionType {
@@ -53,6 +48,7 @@ enum ActionType {
   JOIN_ROOM = "JOIN_ROOM",
   JOINED_ROOM = "JOINED_ROOM",
   ROOM_NOT_FOUND = "ROOM_NOT_FOUND",
+  SPECTATOR_JOINED = "SPECTATOR_JOINED",
 }
 
 const server = new WebSocketServer({
@@ -66,11 +62,19 @@ server.on("listening", () => {
 server.on("connection", (ws) => {
   let room: GameState | undefined;
   let player: Player;
+  let spectatorIdx: number;
 
   ws.on("error", console.error);
   ws.on("message", (data) => {
-    const opponentPlayerConnection =
-      room?.players[player === Player.ONE ? Player.TWO : Player.ONE];
+    const peers = [];
+    const opponentPlayerConnection = player
+      ? room?.players[player === Player.ONE ? Player.TWO : Player.ONE]
+      : undefined;
+    if (opponentPlayerConnection) {
+      peers.push(opponentPlayerConnection);
+    }
+    peers.push(...(room?.spectators || []));
+
     const action = JSON.parse(`${data}`);
     console.log(action);
     switch (action.type) {
@@ -81,23 +85,27 @@ server.on("connection", (ws) => {
         if (!result) return;
 
         room.turn += 1;
-        opponentPlayerConnection?.send(
-          JSON.stringify({
-            type: ActionType.SET_PIECE,
-            payload: { coords: result.coords, player, turn: room.turn },
-          })
-        );
+        peers.forEach((peer) => {
+          peer.send(
+            JSON.stringify({
+              type: ActionType.SET_PIECE,
+              payload: { coords: result.coords, player, turn: room!.turn },
+            })
+          );
+        });
         break;
       }
       case ActionType.RESTART_GAME: {
         if (!room) return sendMessage(ActionType.ROOM_NOT_FOUND);
         room.slots = createFreshSlots();
         room.turn = 0;
-        opponentPlayerConnection?.send(
-          JSON.stringify({
-            type: ActionType.RESTART_GAME,
-          })
-        );
+        peers.forEach((peer) => {
+          peer.send(
+            JSON.stringify({
+              type: ActionType.RESTART_GAME,
+            })
+          );
+        });
         break;
       }
       case ActionType.CREATE_ROOM: {
@@ -106,6 +114,7 @@ server.on("connection", (ws) => {
           slots: createFreshSlots(),
           players: {},
           turn: 0,
+          spectators: [],
         });
         sendMessage(ActionType.ROOM_CREATED, { roomId });
         break;
@@ -117,9 +126,27 @@ server.on("connection", (ws) => {
           sendMessage(ActionType.ROOM_NOT_FOUND);
           break;
         }
-        if (room.players[Player.ONE] && room.players[Player.TWO]) {
-          sendMessage(ActionType.ROOM_IS_FULL);
-          ws.close();
+        const isSpectator =
+          room.players[Player.ONE] && room.players[Player.TWO];
+        if (isSpectator) {
+          sendMessage(ActionType.JOINED_ROOM, {
+            player: null,
+            opponentPlayer: null,
+            slots: room.slots,
+            turnPlayer: (room.turn % 2) + 1,
+            turn: room.turn,
+            spectators: room.spectators.length + 1,
+            isSpectator: true,
+          });
+          [
+            room.players[Player.ONE],
+            room.players[Player.TWO],
+            ...room.spectators,
+          ].forEach((peer) => {
+            peer!.send(JSON.stringify({ type: ActionType.SPECTATOR_JOINED }));
+          });
+          spectatorIdx = room.spectators.length;
+          room.spectators.push(ws);
           break;
         }
 
@@ -139,6 +166,7 @@ server.on("connection", (ws) => {
           slots: room.slots,
           turnPlayer: (room.turn % 2) + 1,
           turn: room.turn,
+          spectators: room.spectators.length,
         });
         opponentPlayerConnection?.send(
           JSON.stringify({
@@ -154,7 +182,10 @@ server.on("connection", (ws) => {
   });
 
   ws.on("close", () => {
-    if (!player) return;
+    if (!player) {
+      room?.spectators.splice(spectatorIdx, 1);
+      return;
+    }
 
     const opponentPlayer = player === Player.ONE ? Player.TWO : Player.ONE;
     const opponentPlayerConnection = room?.players[opponentPlayer];

@@ -1,6 +1,8 @@
 "use client";
 
 import {
+  Dispatch,
+  SetStateAction,
   createContext,
   useCallback,
   useContext,
@@ -18,6 +20,7 @@ type GameContextValues = {
   player: Player | null;
   opponentPlayer: Player | null;
   turn: number;
+  spectators: number;
   markSlot: (colNumber: number) => void;
   restartGame: () => void;
   setTurnPlayer: (newPlayer: Player) => void;
@@ -27,6 +30,7 @@ type GameContextValues = {
   setSlots: (slots: Slots) => void;
   changeTurnPlayer: () => void;
   setTurn: (turn: number) => void;
+  setSpectators: Dispatch<SetStateAction<number>>;
 };
 
 const COLS = 7;
@@ -134,6 +138,7 @@ const GameContext = createContext<GameContextValues>({
   gameWinner: null,
   isGameOver: false,
   turn: 0,
+  spectators: 0,
   markSlot: () => {},
   restartGame: () => {},
   setTurnPlayer: () => {},
@@ -143,6 +148,7 @@ const GameContext = createContext<GameContextValues>({
   changeTurnPlayer: () => {},
   setOpponentPlayer: () => {},
   setTurn: () => {},
+  setSpectators: () => {},
 });
 
 export const useGame = () => useContext(GameContext);
@@ -153,6 +159,7 @@ function GameContextProvider({ children }: React.PropsWithChildren) {
   const [slots, setSlots] = useState(createFreshSlots());
   const [opponentPlayer, setOpponentPlayer] = useState<Player | null>(null);
   const [turn, setTurn] = useState(0);
+  const [spectators, setSpectators] = useState(0);
 
   const restartGame = useCallback(() => {
     setSlots(createFreshSlots());
@@ -216,6 +223,8 @@ function GameContextProvider({ children }: React.PropsWithChildren) {
         setOpponentPlayer,
         turn,
         setTurn,
+        spectators,
+        setSpectators,
       }}
     >
       {children}

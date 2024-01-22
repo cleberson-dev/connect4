@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { LinkIcon } from "@heroicons/react/16/solid";
+import { LinkIcon, EyeIcon } from "@heroicons/react/16/solid";
 
 import { useGame } from "@/app/contexts/Game.context";
 
@@ -22,6 +22,7 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
   const { roomId } = params;
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
+  const [isSpectator, setIsSpectator] = useState(true);
   const {
     turnPlayer,
     setTurnPlayer,
@@ -39,10 +40,15 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
     opponentPlayer,
     turn,
     setTurn,
+    spectators,
+    setSpectators,
   } = useGame();
   useEffect(() => {
     ws = new WebSocket("ws://localhost:8080");
-    ws.onclose = console.error;
+    ws.onclose = () => {
+      setSpectators(0);
+    };
+    ws.onerror = console.error;
     ws.onopen = () => {
       ws.send(
         JSON.stringify({
@@ -61,6 +67,8 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
           setSlots(action.payload.slots);
           setTurnPlayer(action.payload.turnPlayer);
           setTurn(action.payload.turn);
+          setSpectators(action.payload.spectators);
+          setIsSpectator(action.payload.isSpectator);
           setIsLoading(false);
           break;
         }
@@ -87,6 +95,10 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
           setOpponentPlayer(null);
           break;
         }
+        case "SPECTATOR_JOINED": {
+          setSpectators((spectators) => spectators + 1);
+          break;
+        }
         default: {
           console.log("New Event:", action);
         }
@@ -105,6 +117,7 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
   return (
     <>
       <GameHud
+        isSpectator={isSpectator}
         onRestart={() => {
           ws.send(JSON.stringify({ type: "RESTART_GAME" }));
           restartGame();
@@ -128,7 +141,13 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
         />
       </main>
       <footer className="fixed bottom-0 p-2 w-full flex justify-between items-center">
-        <div />
+        <div
+          className="flex items-center text-xs gap-x-1"
+          title={`${spectators} Spectators`}
+        >
+          <EyeIcon className="w-4 h-4" />
+          <span>{spectators}</span>
+        </div>
         <p className="absolute w-full text-center">Turn {turn + 1}</p>
         <button
           onClick={shareRoom}
