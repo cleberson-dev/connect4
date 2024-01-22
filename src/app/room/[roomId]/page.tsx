@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { LinkIcon } from "@heroicons/react/16/solid";
 
 import { useGame } from "@/app/contexts/Game.context";
 
@@ -95,8 +96,12 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
     return () => ws.close();
   }, []);
 
-  if (isLoading) return <Loading />;
+  const shareRoom = () => {
+    const url = window.location.href;
+    navigator.clipboard.writeText(url);
+  };
 
+  if (isLoading) return <Loading />;
   return (
     <>
       <GameHud
@@ -122,8 +127,16 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
           }}
         />
       </main>
-      <footer className="absolute bottom-0 py-2 w-full text-center">
-        <p>Turn {turn + 1}</p>
+      <footer className="fixed bottom-0 p-2 w-full flex justify-between items-center">
+        <div />
+        <p className="absolute w-full text-center">Turn {turn + 1}</p>
+        <button
+          onClick={shareRoom}
+          title="Share Room"
+          className="hover:text-blue-500 z-20"
+        >
+          <LinkIcon className="w-6 h-6" />
+        </button>
       </footer>
     </>
   );
