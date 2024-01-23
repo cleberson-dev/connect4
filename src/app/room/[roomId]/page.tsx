@@ -7,14 +7,8 @@ import { useGame } from "@/app/contexts/Game.context";
 
 import Board from "@/app/components/board";
 import GameHud from "@/app/components/game-hud";
-import { MoonLoader } from "react-spinners";
 import { useRouter } from "next/navigation";
-
-const Loading = () => (
-  <div className="z-50 fixed w-full h-full flex flex-col items-center justify-center">
-    <MoonLoader color="blue" />
-  </div>
-);
+import LoadingModal from "@/app/components/loading-modal";
 
 let ws: WebSocket;
 
@@ -113,7 +107,7 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
     navigator.clipboard.writeText(url);
   };
 
-  if (isLoading) return <Loading />;
+  if (isLoading) return <LoadingModal open />;
   return (
     <>
       <GameHud
