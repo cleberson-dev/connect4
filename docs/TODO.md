@@ -9,3 +9,6 @@
 - [] Users (Players or Spectators) should be able to add their name
 - [] Make rooms joinable by password
 - [] Refactor WebSocket Use (Implement a hook with context)
+- [] Add Unit tests (Components)
+- [] Add E2E Tests
+- [] Add Unit Tests (Server)
