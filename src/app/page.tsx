@@ -3,9 +3,11 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useModal } from "@/app/contexts/Modal.context";
-import LoadingModal from "@/app/components/loading-modal";
-import RoomsListModal from "@/app/components/rooms-list-modal";
-import CreateRoomModal from "@/app/components/create-room-modal";
+
+import LoadingModal from "@/app/modals/loading.modal";
+import RoomsListModal from "@/app/modals/rooms-list.modal";
+import CreateRoomModal from "@/app/modals/create-room.modal";
+
 import apiService from "@/app/services/api.service";
 
 export default function Home() {

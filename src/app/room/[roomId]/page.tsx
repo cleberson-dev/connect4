@@ -1,18 +1,20 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { LinkIcon, EyeIcon } from "@heroicons/react/16/solid";
 import { useRouter } from "next/navigation";
+import { LinkIcon, EyeIcon } from "@heroicons/react/16/solid";
 
-import { GameState, useGame } from "@/app/contexts/Game.context";
+import { useGame, GameState } from "@/app/contexts/Game.context";
+import { useModal } from "@/app/contexts/Modal.context";
+import { useWebSockets } from "@/app/hooks/useWebSocket";
 
 import Board from "@/app/components/board";
 import GameHud from "@/app/components/game-hud";
-import LoadingModal from "@/app/components/loading-modal";
-import { useWebSockets } from "@/app/hooks/useWebSocket";
+
+import LoadingModal from "@/app/modals/loading.modal";
+import EnterRoomPasswordModal from "@/app/modals/enter-room-password.modal";
+
 import { RequestActionType, ResponseActionType } from "@/shared/types";
-import { useModal } from "@/app/contexts/Modal.context";
-import EnterRoomPasswordModal from "@/app/components/enter-room-password-modal";
 
 export default function RoomPage({ params }: { params: { roomId: string } }) {
   const { roomId } = params;
