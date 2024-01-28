@@ -1,10 +1,10 @@
-import { useCallback, useMemo } from "react";
+import { useCallback } from "react";
 import cls from "classnames";
 
 import Piece from "@/app/components/piece";
 
 import { useGame } from "@/app/contexts/Game.context";
-import { Player } from "@/app/types";
+import { Player } from "@/shared/types";
 
 const className = {
   header:
@@ -32,7 +32,7 @@ type GameHudProps = {
 const turnText = <strong className={className.turnText}>Turn</strong>;
 
 export default function GameHud({ onRestart, isSpectator }: GameHudProps) {
-  const { turnPlayer, isGameOver, player, opponentPlayer } = useGame();
+  const { turnPlayer, isGameOver, state } = useGame();
 
   const isPlayersTurn = useCallback(
     (player: Player) => !isGameOver && player === turnPlayer,
@@ -44,16 +44,15 @@ export default function GameHud({ onRestart, isSpectator }: GameHudProps) {
       <div
         className={className.playerArea(
           isPlayersTurn(Player.ONE),
-          !isSpectator && opponentPlayer === null && player !== Player.ONE
+          !state.players[Player.ONE].online
         )}
-        title={
-          opponentPlayer === null && player !== Player.ONE
-            ? "Waiting for opponent"
-            : undefined
-        }
+        title={!state.players[Player.ONE].online ? "Waiting for opponent" : ""}
       >
         <Piece player={Player.ONE} size="sm" />
-        <span>Player 1 {!isSpectator && player === Player.ONE && `(YOU)`}</span>
+        <span>
+          {state.players[Player.ONE].name || "Player 1"}{" "}
+          {!isSpectator && state.me === Player.ONE && `(YOU)`}
+        </span>
         {isPlayersTurn(Player.ONE) && turnText}
       </div>
       <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center">
@@ -67,16 +66,15 @@ export default function GameHud({ onRestart, isSpectator }: GameHudProps) {
       <div
         className={`${className.playerArea(
           isPlayersTurn(Player.TWO),
-          !isSpectator && opponentPlayer === null && player !== Player.TWO
+          !state.players[Player.TWO].online
         )} text-right`}
-        title={
-          opponentPlayer === null && player !== Player.TWO
-            ? "Waiting for opponent"
-            : undefined
-        }
+        title={!state.players[Player.TWO].online ? "Waiting for opponent" : ""}
       >
         <Piece player={Player.TWO} size="sm" />
-        <span>Player 2 {!isSpectator && player === Player.TWO && `(YOU)`}</span>
+        <span>
+          {state.players[Player.TWO].name || "Player 2"}{" "}
+          {!isSpectator && state.me === Player.TWO && `(YOU)`}
+        </span>
         {isPlayersTurn(Player.TWO) && turnText}
       </div>
     </header>

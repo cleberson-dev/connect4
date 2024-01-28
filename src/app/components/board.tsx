@@ -1,22 +1,21 @@
 import cls from "classnames";
-import { Player, Slots, WinnerCheckerResults } from "../types";
-import Piece from "./piece";
+import Piece from "@/app/components/piece";
+import { WinnerCheckerResults } from "@/app/types";
+import { Player, Slots } from "@/shared/types";
 
 type BoardProps = {
   slots: Slots;
+  player: Player | null;
   turnPlayer: Player;
-  isYourTurn: boolean;
   gameWinner: WinnerCheckerResults | null;
-  isGameOver?: boolean;
   onColumnClick?: (colNumber: number) => void;
   playable?: boolean;
 };
 
 export default function Board({
   slots,
+  player,
   turnPlayer,
-  isYourTurn,
-  isGameOver,
   onColumnClick,
   gameWinner,
   playable = false,
@@ -36,6 +35,8 @@ export default function Board({
       )
     );
 
+  const isPlayersTurn = player === turnPlayer;
+
   return (
     <>
       <div className="bg-blue-700 rounded shadow flex gap-5 sm:gap-8 p-4 select-none">
@@ -44,12 +45,11 @@ export default function Board({
             key={colNumber}
             className={cls("flex flex-col group gap-3 sm:gap-6", {
               "cursor-pointer":
-                !isColFull(colNumber) && !isGameOver && isYourTurn && playable,
+                playable && isPlayersTurn && !isColFull(colNumber),
             })}
             onClick={() =>
-              !isGameOver &&
-              isYourTurn &&
               playable &&
+              isPlayersTurn &&
               !isColFull(colNumber) &&
               onColumnClick?.(colNumber)
             }
@@ -59,8 +59,6 @@ export default function Board({
                 key={rowNumber}
                 player={player}
                 turnPlayer={turnPlayer}
-                isGameOver={isGameOver}
-                isYourTurn={isYourTurn}
                 playable={playable}
                 highlighted={isPieceHighlighted(player, colNumber, rowNumber)}
               />

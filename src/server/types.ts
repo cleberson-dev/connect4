@@ -1,22 +1,16 @@
-export enum Direction {
-  UP,
-  DOWN,
-  LEFT,
-  RIGHT,
-  UP_LEFT,
-  UP_RIGHT,
-  DOWN_LEFT,
-  DOWN_RIGHT,
-}
+import { WebSocket } from "ws";
+import { Player } from "@/shared/types";
 
-export enum Player {
-  ONE = 1,
-  TWO = 2,
-}
-
-export type Slots = (Player | null)[][];
-
-export type WinnerCheckerResults = {
-  player: Player.ONE | Player.TWO;
-  coords: [number, number][];
+export type RoomConnection = {
+  players: Record<Player, WebSocket | null>;
+  spectators: WebSocket[];
 };
+
+export type RoomsConnectionsMap = Map<string, RoomConnection>;
+
+export type WsConnectionState = Partial<{
+  roomId: string;
+  spectatorIdx: number;
+  me: Player;
+  opponent: Player;
+}>;

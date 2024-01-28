@@ -1,5 +1,5 @@
 import cls from "classnames";
-import { Player } from "../types";
+import { Player } from "@/shared/types";
 
 type PieceProps = {
   player: Player | null;
@@ -7,8 +7,6 @@ type PieceProps = {
   onClick?: () => void;
   size?: "sm" | "base";
   highlighted?: boolean;
-  isGameOver?: boolean;
-  isYourTurn?: boolean;
   playable?: boolean;
 };
 
@@ -31,26 +29,21 @@ const classesBySize = {
 
 export default function Piece({
   player,
+  turnPlayer,
   onClick,
   size = "base",
   highlighted,
-  isGameOver,
-  turnPlayer,
-  isYourTurn,
-  playable = false,
+  playable,
 }: PieceProps) {
   const isEmpty = player === null;
+  const isPlayersTurn = player === turnPlayer;
 
   const className = cls(
     "inline-block border-solid border-black rounded-full",
     highlighted ? "border-4" : "border-3",
     classesBySize[size],
     player ? classesByPlayer[player] : "bg-slate-200",
-    !isGameOver &&
-      isEmpty &&
-      isYourTurn &&
-      playable &&
-      hoverClassesByPlayer[turnPlayer!]
+    playable && isEmpty && isPlayersTurn && hoverClassesByPlayer[turnPlayer!]
   );
 
   if (isEmpty) return <span onClick={onClick} className={className}></span>;

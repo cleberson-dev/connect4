@@ -8,3 +8,4 @@
 - [] Refactor Server Messages (Organize peers)
 - [] Refactor Client Messages (Enum to Action Types, Message Sender Function)
 - [] Refactor WebSocket Use (Implement a hook with context)
+- [] Make rooms joinable by password

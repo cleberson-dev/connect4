@@ -1,36 +1,40 @@
 "use client";
 
-import {
-  Dispatch,
-  SetStateAction,
-  createContext,
-  useCallback,
-  useContext,
-  useMemo,
-  useState,
-} from "react";
+import { createContext, useContext, useMemo, useState } from "react";
 
-import { Direction, Player, Slots, WinnerCheckerResults } from "../types";
+import { Direction, WinnerCheckerResults } from "@/app/types";
+import { Player, Slots } from "@/shared/types";
+
+type GameStatePlayer = {
+  name?: string;
+  online?: boolean;
+};
+
+export type GameState = {
+  players: Record<Player, GameStatePlayer>;
+  slots: Slots;
+  turn: number;
+  spectators: number;
+  me: Player | null;
+};
 
 type GameContextValues = {
-  slots: Slots;
+  // State
+  state: GameState;
   turnPlayer: Player;
   gameWinner: WinnerCheckerResults | null;
   isGameOver: boolean;
-  player: Player | null;
-  opponentPlayer: Player | null;
-  turn: number;
-  spectators: number;
-  markSlot: (colNumber: number) => void;
-  restartGame: () => void;
-  setTurnPlayer: (newPlayer: Player) => void;
-  setPlayer: (newPlayer: Player | null) => void;
-  setOpponentPlayer: (opponentPlayer: Player | null) => void;
+
+  // Actions
+  setState: (newState: GameState) => void;
+  addPiece: (colNumber: number) => void;
   updateSlot: (coords: [number, number], player: Player) => void;
-  setSlots: (slots: Slots) => void;
-  changeTurnPlayer: () => void;
-  setTurn: (turn: number) => void;
-  setSpectators: Dispatch<SetStateAction<number>>;
+  goNextTurn: () => void;
+  addSpectator: () => void;
+  removeSpectator: () => void;
+  restartGame: () => void;
+  joinOpponent: (player: Player, name: string) => void;
+  leaveOpponent: () => void;
 };
 
 const COLS = 7;
@@ -131,100 +135,142 @@ const whoWon = (slots: Slots): WinnerCheckerResults | null => {
 };
 
 const GameContext = createContext<GameContextValues>({
-  slots: [],
+  state: {
+    players: {
+      [Player.ONE]: {},
+      [Player.TWO]: {},
+    },
+    slots: [],
+    spectators: 0,
+    turn: 0,
+    me: Player.ONE,
+  },
   turnPlayer: Player.ONE,
-  player: null,
-  opponentPlayer: null,
   gameWinner: null,
   isGameOver: false,
-  turn: 0,
-  spectators: 0,
-  markSlot: () => {},
+  addPiece: () => {},
+  addSpectator: () => {},
+  removeSpectator: () => {},
+  goNextTurn: () => {},
   restartGame: () => {},
-  setTurnPlayer: () => {},
-  setPlayer: () => {},
+  setState: () => {},
   updateSlot: () => {},
-  setSlots: () => {},
-  changeTurnPlayer: () => {},
-  setOpponentPlayer: () => {},
-  setTurn: () => {},
-  setSpectators: () => {},
+  joinOpponent: () => {},
+  leaveOpponent: () => {},
 });
 
 export const useGame = () => useContext(GameContext);
 
 function GameContextProvider({ children }: React.PropsWithChildren) {
-  const [player, setPlayer] = useState<Player | null>(null);
-  const [turnPlayer, setTurnPlayer] = useState<Player>(Player.ONE);
-  const [slots, setSlots] = useState(createFreshSlots());
-  const [opponentPlayer, setOpponentPlayer] = useState<Player | null>(null);
-  const [turn, setTurn] = useState(0);
-  const [spectators, setSpectators] = useState(0);
+  const [state, setState] = useState<GameState>({
+    players: {
+      [Player.ONE]: {},
+      [Player.TWO]: {},
+    },
+    slots: createFreshSlots(),
+    spectators: 0,
+    turn: 0,
+    me: Player.ONE,
+  });
 
-  const restartGame = useCallback(() => {
-    setSlots(createFreshSlots());
-    setTurnPlayer(Player.ONE);
-    setTurn(0);
-  }, []);
+  // Computed
+  const turnPlayer: Player = (state.turn % 2) + 1;
+  const gameWinner = useMemo(() => whoWon(state.slots), [state.slots]);
+  const isGameOver = useMemo(() => gameWinner !== null, [gameWinner]);
 
-  const changeTurnPlayer = useCallback(
-    () =>
-      setTurnPlayer((previousTurnPlayer) =>
-        previousTurnPlayer === Player.ONE ? Player.TWO : Player.ONE
-      ),
-    []
-  );
-
+  // Methods/Actions
+  const restartGame = () =>
+    setState((prevState) => ({
+      ...prevState,
+      slots: createFreshSlots(),
+      turn: 0,
+    }));
+  const addSpectator = () =>
+    setState((prevState) => ({
+      ...prevState,
+      spectators: prevState.spectators + 1,
+    }));
+  const removeSpectator = () =>
+    setState((prevState) => ({
+      ...prevState,
+      spectators: prevState.spectators - 1,
+    }));
+  const goNextTurn = () =>
+    setState((prevState) => ({ ...prevState, turn: prevState.turn + 1 }));
   const updateSlot = ([col, row]: [number, number], player: Player) => {
-    setSlots((prevSlots) =>
-      prevSlots.toSpliced(col, 1, prevSlots[col].toSpliced(row, 1, player))
-    );
+    setState((prevState) => ({
+      ...prevState,
+      slots: prevState.slots.toSpliced(
+        col,
+        1,
+        prevState.slots[col].toSpliced(row, 1, player)
+      ),
+    }));
   };
 
-  const markSlot = useCallback(
-    (colNumber: number) => {
-      setSlots((prevSlots) => {
-        const selectedColumn = [...prevSlots[colNumber]];
+  const addPiece = (colNumber: number) => {
+    setState((prevState) => ({
+      ...prevState,
+      slots: (() => {
+        const { slots } = prevState;
+        const selectedColumn = [...slots[colNumber]];
         const lastIndexOfNull = selectedColumn.lastIndexOf(null);
 
-        if (lastIndexOfNull === -1) return prevSlots;
+        if (lastIndexOfNull === -1) return slots;
 
         const newColumn = selectedColumn.toSpliced(
           lastIndexOfNull,
           1,
           turnPlayer
         );
-        return prevSlots.toSpliced(colNumber, 1, newColumn);
-      });
-      changeTurnPlayer();
-    },
-    [turnPlayer, changeTurnPlayer]
-  );
+        return slots.toSpliced(colNumber, 1, newColumn);
+      })(),
+    }));
+  };
 
-  const gameWinner = useMemo(() => whoWon(slots), [slots]);
-  const isGameOver = useMemo(() => gameWinner !== null, [gameWinner]);
+  const joinOpponent = (player: Player, name: string) => {
+    setState((prevState) => ({
+      ...prevState,
+      players: {
+        ...prevState.players,
+        [player]: {
+          name,
+          online: true,
+        },
+      },
+    }));
+  };
+
+  const leaveOpponent = () => {
+    const opponent = state.me === Player.ONE ? Player.TWO : Player.ONE;
+    setState((prevState) => ({
+      ...prevState,
+      players: {
+        ...prevState.players,
+        [opponent]: {
+          ...prevState.players[opponent],
+          online: false,
+        },
+      },
+    }));
+  };
 
   return (
     <GameContext.Provider
       value={{
-        slots,
+        state,
         turnPlayer,
-        player,
         gameWinner,
         isGameOver,
-        markSlot,
+        addPiece,
+        addSpectator,
+        removeSpectator,
+        goNextTurn,
         restartGame,
-        setTurnPlayer,
-        setPlayer,
+        setState,
         updateSlot,
-        setSlots,
-        opponentPlayer,
-        changeTurnPlayer,
-        setOpponentPlayer,
-        turn,
-        setTurn,
-        spectators,
-        setSpectators,
+        joinOpponent,
+        leaveOpponent,
       }}
     >
       {children}
