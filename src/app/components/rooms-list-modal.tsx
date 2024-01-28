@@ -20,12 +20,7 @@ export default function RoomsListModal() {
           className="px-3 py-5 border-b hover:bg-violet-100/50 transition-colors"
         >
           <Link href={`/room/${room.id}`} className="flex flex-col text-sm">
-            <strong>
-              Room
-              <small className="block text-2xs text-violet-500">
-                #{room.id}
-              </small>
-            </strong>
+            <strong>{room.name}</strong>
             <span className="text-gray-300 text-sm flex gap-x-2 mt-1 self-end">
               <small className="flex items-center gap-x-1">
                 {room.players}/2
