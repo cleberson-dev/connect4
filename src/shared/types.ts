@@ -12,6 +12,8 @@ type RoomPlayer = {
 
 export type Room = {
   id: string;
+  name: string;
+  password: string;
   slots: Slots;
   players: Record<Player, RoomPlayer>;
   turn: number;

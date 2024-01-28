@@ -14,11 +14,13 @@ const redis = createClient({ password: process.env.REDIS_PASS })
 
 const getRoomKey = (roomId: string) => `room-${roomId}`;
 
-export const createRoom = async () => {
+export const createRoom = async (name: string, password: string) => {
   const roomId = short.generate();
 
   const room: Room = {
     id: roomId,
+    name,
+    password,
     slots: createFreshSlots(),
     players: {
       [Player.ONE]: {},

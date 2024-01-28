@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import { createRoom, getRoomsList } from "@/server/data-source";
+import * as schemas from "@/server/http/schemas";
 
 const PORT = process.env.HTTP_PORT || 5000;
 
@@ -19,8 +20,15 @@ app.get("/rooms", async (_, res) => {
 });
 
 // Create Room
-app.post("/rooms", async (_, res) => {
-  const room = await createRoom();
+app.post("/rooms", async (req, res) => {
+  const { name, password } = req.body;
+
+  const { error } = schemas.createRoomSchema.validate({ name, password });
+  if (error) {
+    return res.sendStatus(400).json({ message: error });
+  }
+
+  const room = await createRoom(name, password);
   return res.status(201).json({ id: room.id });
 });
 
