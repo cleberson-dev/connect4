@@ -18,7 +18,8 @@ const api = axios.create({
 
 const routes = {
   getRooms: () => api.get<GetRoomsResponse>("/rooms"),
-  createRoom: () => api.post<CreateRoomResponse>("/rooms"),
+  createRoom: (name: string, password: string) =>
+    api.post<CreateRoomResponse>("/rooms", { name, password }),
 };
 
 export default routes;
