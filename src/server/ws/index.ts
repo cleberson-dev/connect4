@@ -25,9 +25,14 @@ server.on("connection", (ws) => {
 
     switch (action.type) {
       case RequestActionType.JOIN_ROOM: {
-        const { roomId } = action.payload;
+        const { roomId, password } = action.payload;
 
-        const result = await actionHandlers.joinRoom(ws, roomId, connections);
+        const result = await actionHandlers.joinRoom(
+          ws,
+          roomId,
+          connections,
+          password
+        );
         if (!result) break;
 
         const [me, opponent, spectatorIdx] = result;

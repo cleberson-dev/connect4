@@ -1,7 +1,10 @@
 import axios from "axios";
 import { Room } from "@/shared/types";
 
-export type ApiRoom = Omit<Room, "slots" | "players" | "creationDate"> & {
+export type ApiRoom = Omit<
+  Room,
+  "slots" | "players" | "creationDate" | "password"
+> & {
   players: number;
   creationDate: string;
 };

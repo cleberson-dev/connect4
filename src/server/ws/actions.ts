@@ -18,7 +18,8 @@ type JoinRoomReturnType =
 export const joinRoom = async (
   ws: WebSocket,
   roomId: string,
-  connections: RoomsConnectionsMap
+  connections: RoomsConnectionsMap,
+  password: string
 ): Promise<JoinRoomReturnType> => {
   let me: Player | undefined = undefined;
   let opponent: Player | undefined = undefined;
@@ -26,7 +27,7 @@ export const joinRoom = async (
 
   const room = await getRoom(roomId);
 
-  if (!room) {
+  if (!room || room.password !== password) {
     sendMessage(ws, ResponseActionType.ROOM_NOT_FOUND);
     ws.close();
     return;
