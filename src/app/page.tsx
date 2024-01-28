@@ -1,27 +1,25 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useModal } from "@/app/contexts/Modal.context";
 
-import LoadingModal from "@/app/modals/loading.modal";
 import RoomsListModal from "@/app/modals/rooms-list.modal";
 import CreateRoomModal from "@/app/modals/create-room.modal";
 
 import apiService from "@/app/services/api.service";
+import useLoading from "./hooks/useLoading";
 
 export default function Home() {
-  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const modal = useModal();
+  const loading = useLoading();
 
   const openCreateRoomModal = () => {
     modal.showModal(<CreateRoomModal onCreate={createRoom} />);
   };
 
   const createRoom = async (name: string, password: string) => {
-    setIsLoading(true);
-    modal.showModal(<LoadingModal />);
+    loading.showLoading();
 
     try {
       const {
@@ -31,8 +29,7 @@ export default function Home() {
     } catch (err) {
       console.error("Room, Failed on Creation: ", err);
     } finally {
-      setIsLoading(false);
-      modal.hideModal();
+      loading.hideLoading();
     }
   };
 
@@ -40,7 +37,7 @@ export default function Home() {
     modal.showModal(<RoomsListModal />);
   };
 
-  if (isLoading) return null;
+  if (loading.isLoading) return null;
 
   return (
     <main className="flex h-[100svh] flex-col items-center justify-center text-center">

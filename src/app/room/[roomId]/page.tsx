@@ -15,17 +15,19 @@ import LoadingModal from "@/app/modals/loading.modal";
 import EnterRoomPasswordModal from "@/app/modals/enter-room-password.modal";
 
 import { RequestActionType, ResponseActionType } from "@/shared/types";
+import useLoading from "@/app/hooks/useLoading";
 
 export default function RoomPage({ params }: { params: { roomId: string } }) {
   const { roomId } = params;
 
-  const [isLoading, setIsLoading] = useState(false);
   const [ísEnteringPassword, setIsEnteringPassword] = useState(true);
 
   const router = useRouter();
-  const game = useGame();
   const ws = useWebSockets({});
+  const game = useGame();
+
   const modal = useModal();
+  const loading = useLoading();
 
   useEffect(() => {
     modal.showModal(
@@ -33,7 +35,7 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
         onConfirm={(password) => {
           ws.sendMessage(RequestActionType.JOIN_ROOM, { roomId, password });
           modal.hideModal();
-          setIsLoading(true);
+          loading.showLoading();
           setIsEnteringPassword(false);
         }}
       />
@@ -48,7 +50,7 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
       case ResponseActionType.JOINED_ROOM: {
         const payload: GameState = action.payload;
         game.setState(payload);
-        setIsLoading(false);
+        loading.hideLoading();
         break;
       }
       case ResponseActionType.ROOM_NOT_FOUND: {
@@ -94,7 +96,7 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
     navigator.clipboard.writeText(url);
   };
 
-  if (isLoading) return <LoadingModal />;
+  if (loading.isLoading) return <LoadingModal />;
   if (ísEnteringPassword) return null;
 
   return (
