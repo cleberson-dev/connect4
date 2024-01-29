@@ -30,10 +30,20 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
   const loading = useLoading();
 
   useEffect(() => {
+    const name = sessionStorage.getItem("name");
+    if (!name) {
+      alert("You should have a name");
+      return router.replace("/");
+    }
+
     modal.showModal(
       <EnterRoomPasswordModal
         onConfirm={(password) => {
-          ws.sendMessage(RequestActionType.JOIN_ROOM, { roomId, password });
+          ws.sendMessage(RequestActionType.JOIN_ROOM, {
+            roomId,
+            password,
+            name,
+          });
           modal.hideModal();
           loading.showLoading();
           setIsEnteringPassword(false);
