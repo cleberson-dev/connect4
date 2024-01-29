@@ -16,6 +16,7 @@ import EnterRoomPasswordModal from "@/app/modals/enter-room-password.modal";
 
 import { RequestActionType, ResponseActionType } from "@/shared/types";
 import useLoading from "@/app/hooks/useLoading";
+import { Tooltip } from "react-tooltip";
 
 export default function RoomPage({ params }: { params: { roomId: string } }) {
   const { roomId } = params;
@@ -138,6 +139,7 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
       </main>
       <footer className="fixed bottom-0 p-2 w-full flex justify-between items-center">
         <div
+          id="spectatorsCount"
           className="flex items-center text-xs gap-x-1"
           title={`${game.state.spectators.length} Spectators`}
         >
@@ -155,6 +157,14 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
           <LinkIcon className="w-6 h-6" />
         </button>
       </footer>
+
+      <Tooltip anchorSelect="#spectatorsCount">
+        <ul>
+          {game.state.spectators.map((spectator) => (
+            <li key={spectator.id}>{spectator.name}</li>
+          ))}
+        </ul>
+      </Tooltip>
     </>
   );
 }
