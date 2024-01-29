@@ -2,6 +2,7 @@ import { WebSocket } from "ws";
 
 import {
   createFreshSlots,
+  createSpectator,
   flatRoomConnections,
   markSlot,
   sendMessage,
@@ -12,7 +13,7 @@ import { RoomsConnectionsMap } from "@/server/types";
 import { Player, ResponseActionType } from "@/shared/types";
 
 type JoinRoomReturnType =
-  | [Player | undefined, Player | undefined, number | undefined]
+  | [Player | undefined, Player | undefined, string | undefined]
   | undefined;
 
 export const joinRoom = async (
@@ -24,7 +25,7 @@ export const joinRoom = async (
 ): Promise<JoinRoomReturnType> => {
   let me: Player | undefined = undefined;
   let opponent: Player | undefined = undefined;
-  let spectatorIdx: number | undefined = undefined;
+  let spectatorId: string | undefined = undefined;
 
   const room = await getRoom(roomId);
 
@@ -37,7 +38,7 @@ export const joinRoom = async (
   let thisRoomConnections = connections.get(roomId);
   if (!thisRoomConnections) {
     thisRoomConnections = {
-      spectators: [],
+      spectators: new Map(),
       players: {
         [Player.ONE]: null,
         [Player.TWO]: null,
@@ -48,8 +49,9 @@ export const joinRoom = async (
 
   // Should be a spectator
   if (!!room.players[Player.ONE].online && !!room.players[Player.TWO].online) {
-    spectatorIdx = room.spectators;
-    room.spectators += 1;
+    const spectator = createSpectator(playerName);
+    spectatorId = spectator.id;
+    room.spectators.push(spectator);
     await saveRoom(room);
 
     // Send Back Message with Current Game State
@@ -58,13 +60,15 @@ export const joinRoom = async (
     // Notify spectators entrance to the rest of the room
     flatRoomConnections(connections.get(roomId)!).forEach((connection) => {
       connection &&
-        sendMessage(connection, ResponseActionType.SPECTATOR_JOINED);
+        sendMessage(connection, ResponseActionType.SPECTATOR_JOINED, {
+          spectator,
+        });
     });
 
     // Add this connection to the room's spectators list
-    thisRoomConnections.spectators.push(ws);
+    thisRoomConnections.spectators.set(spectator.id, ws);
     connections.set(roomId, thisRoomConnections);
-    return [undefined, undefined, spectatorIdx];
+    return [undefined, undefined, spectatorId];
   }
 
   // Define which player is this connection
@@ -92,7 +96,7 @@ export const joinRoom = async (
     playerNo: me!,
   };
   const { players, spectators } = thisRoomConnections;
-  [players[opponent!], ...spectators].forEach(
+  [players[opponent!], ...spectators.values()].forEach(
     (connection) =>
       connection &&
       sendMessage(connection, ResponseActionType.OPPONENT_JOINED, payload)
@@ -124,7 +128,7 @@ export const setPiece = async (
   // Tell the others
   const { players, spectators } = connections.get(room.id)!;
   const payload = { coords: result.coords, player: me };
-  [players[opponent], ...spectators].forEach((connection) => {
+  [players[opponent], ...spectators.values()].forEach((connection) => {
     connection &&
       sendMessage(connection, ResponseActionType.SET_PIECE, payload);
   });

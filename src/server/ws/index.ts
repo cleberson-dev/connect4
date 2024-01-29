@@ -1,6 +1,10 @@
 import { WebSocketServer } from "ws";
 
-import { parseWsMessage, sendMessage } from "@/server/utils";
+import {
+  flatRoomConnections,
+  parseWsMessage,
+  sendMessage,
+} from "@/server/utils";
 import { getRoom, removeRoom, saveRoom } from "@/server/data-source";
 import * as actionHandlers from "@/server/ws/actions";
 import { RoomsConnectionsMap, WsConnectionState } from "@/server/types";
@@ -25,18 +29,19 @@ server.on("connection", (ws) => {
 
     switch (action.type) {
       case RequestActionType.JOIN_ROOM: {
-        const { roomId, password } = action.payload;
+        const { roomId, password, name } = action.payload;
 
         const result = await actionHandlers.joinRoom(
           ws,
           roomId,
           connections,
-          password
+          password,
+          name
         );
         if (!result) break;
 
-        const [me, opponent, spectatorIdx] = result;
-        connectionState = { me, opponent, spectatorIdx };
+        const [me, opponent, spectatorId] = result;
+        connectionState = { me, opponent, spectatorId };
 
         break;
       }
@@ -64,7 +69,7 @@ server.on("connection", (ws) => {
   });
 
   ws.on("close", async () => {
-    const { roomId, me, opponent, spectatorIdx } = connectionState;
+    const { roomId, me, opponent, spectatorId } = connectionState;
 
     const room = await getRoom(roomId!);
     if (!room) return;
@@ -73,7 +78,7 @@ server.on("connection", (ws) => {
     if (!roomConnections) return;
 
     if (
-      room.spectators === 0 &&
+      room.spectators.length === 0 &&
       Object.values(room.players).filter((player) => player.online).length === 1
     ) {
       console.log("Room empty, removing...");
@@ -85,9 +90,11 @@ server.on("connection", (ws) => {
     const { players, spectators } = roomConnections;
     if (!me) {
       console.log("Spectator leaving");
-      room.spectators -= 1;
-      roomConnections.spectators.splice(spectatorIdx!, 1);
-      [...Object.values(players), ...spectators].forEach((connection) => {
+      room.spectators = room.spectators.filter(
+        (spectator) => spectator.id !== spectatorId
+      );
+      roomConnections.spectators.delete(spectatorId!);
+      flatRoomConnections(roomConnections).forEach((connection) => {
         connection &&
           sendMessage(connection, ResponseActionType.SPECTATOR_LEFT);
       });
@@ -97,7 +104,7 @@ server.on("connection", (ws) => {
       console.log("Player leaving");
       room.players[me].online = false;
       delete roomConnections.players[me];
-      [players[opponent!], ...spectators].forEach((connection) => {
+      [players[opponent!], ...spectators.values()].forEach((connection) => {
         connection && sendMessage(connection, ResponseActionType.OPPONENT_LEFT);
       });
     }

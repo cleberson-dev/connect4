@@ -87,11 +87,11 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
         break;
       }
       case ResponseActionType.SPECTATOR_JOINED: {
-        game.addSpectator();
+        game.addSpectator(action.payload.spectator);
         break;
       }
       case ResponseActionType.SPECTATOR_LEFT: {
-        game.removeSpectator();
+        game.removeSpectator(action.payload.spectatorId);
         break;
       }
     }
@@ -139,10 +139,10 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
       <footer className="fixed bottom-0 p-2 w-full flex justify-between items-center">
         <div
           className="flex items-center text-xs gap-x-1"
-          title={`${game.state.spectators} Spectators`}
+          title={`${game.state.spectators.length} Spectators`}
         >
           <EyeIcon className="w-4 h-4" />
-          <span>{game.state.spectators}</span>
+          <span>{game.state.spectators.length}</span>
         </div>
         <p className="absolute w-full text-center">
           Turn {game.state.turn + 1}

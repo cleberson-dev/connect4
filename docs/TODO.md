@@ -8,8 +8,9 @@
 - [x] Refactor Client Messages (Enum to Action Types, Message Sender Function)
 - [x] Players should be able to add their name
 - [x] Make rooms joinable by password
-- [] Refactor WebSocket Use (Implement a hook with context)
 - [] Spectators should be able to add their name
+- [] Refactor WebSocket Use (Implement a hook with context)
 - [] Add Unit tests (Components)
 - [] Add E2E Tests
 - [] Add Unit Tests (Server)
+- [] Find a way to enforce payload type based on action type

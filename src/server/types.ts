@@ -3,14 +3,14 @@ import { Player } from "@/shared/types";
 
 export type RoomConnection = {
   players: Record<Player, WebSocket | null>;
-  spectators: WebSocket[];
+  spectators: Map<string, WebSocket>;
 };
 
 export type RoomsConnectionsMap = Map<string, RoomConnection>;
 
 export type WsConnectionState = Partial<{
   roomId: string;
-  spectatorIdx: number;
+  spectatorId: string;
   me: Player;
   opponent: Player;
 }>;

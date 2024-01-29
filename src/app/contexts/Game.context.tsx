@@ -3,7 +3,7 @@
 import { createContext, useContext, useMemo, useState } from "react";
 
 import { Direction, WinnerCheckerResults } from "@/app/types";
-import { Player, Slots } from "@/shared/types";
+import { Player, Slots, Spectator } from "@/shared/types";
 
 type GameStatePlayer = {
   name?: string;
@@ -14,7 +14,7 @@ export type GameState = {
   players: Record<Player, GameStatePlayer>;
   slots: Slots;
   turn: number;
-  spectators: number;
+  spectators: Spectator[];
   me: Player | null;
 };
 
@@ -30,8 +30,8 @@ type GameContextValues = {
   addPiece: (colNumber: number) => void;
   updateSlot: (coords: [number, number], player: Player) => void;
   goNextTurn: () => void;
-  addSpectator: () => void;
-  removeSpectator: () => void;
+  addSpectator: (spectator: Spectator) => void;
+  removeSpectator: (spectatorId: string) => void;
   restartGame: () => void;
   joinOpponent: (player: Player, name: string) => void;
   leaveOpponent: () => void;
@@ -141,7 +141,7 @@ const GameContext = createContext<GameContextValues>({
       [Player.TWO]: {},
     },
     slots: [],
-    spectators: 0,
+    spectators: [],
     turn: 0,
     me: Player.ONE,
   },
@@ -168,7 +168,7 @@ function GameContextProvider({ children }: React.PropsWithChildren) {
       [Player.TWO]: {},
     },
     slots: createFreshSlots(),
-    spectators: 0,
+    spectators: [],
     turn: 0,
     me: Player.ONE,
   });
@@ -185,15 +185,17 @@ function GameContextProvider({ children }: React.PropsWithChildren) {
       slots: createFreshSlots(),
       turn: 0,
     }));
-  const addSpectator = () =>
+  const addSpectator = (spectator: Spectator) =>
     setState((prevState) => ({
       ...prevState,
-      spectators: prevState.spectators + 1,
+      spectators: [...prevState.spectators, spectator],
     }));
-  const removeSpectator = () =>
+  const removeSpectator = (spectatorId: string) =>
     setState((prevState) => ({
       ...prevState,
-      spectators: prevState.spectators - 1,
+      spectators: prevState.spectators.filter(
+        (spectator) => spectator.id !== spectatorId
+      ),
     }));
   const goNextTurn = () =>
     setState((prevState) => ({ ...prevState, turn: prevState.turn + 1 }));

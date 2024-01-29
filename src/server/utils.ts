@@ -1,9 +1,11 @@
 import { WebSocket, RawData } from "ws";
+import short from "short-uuid";
 import {
   Player,
   RequestActionType,
   ResponseActionType,
   Slots,
+  Spectator,
 } from "@/shared/types";
 import { RoomConnection } from "@/server/types";
 
@@ -43,11 +45,18 @@ export const sendMessage = (
 
 export const flatRoomConnections = (connection: RoomConnection) => {
   const { players, spectators } = connection;
-  return [...Object.values(players), ...spectators];
+  return [...Object.values(players), ...spectators.values()];
 };
 
 export const parseWsMessage = (
   message: RawData
 ): { type: RequestActionType; payload: any } => {
   return JSON.parse(message.toString());
+};
+
+export const createSpectator = (name: string): Spectator => {
+  return {
+    id: short.generate(),
+    name,
+  };
 };

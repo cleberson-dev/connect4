@@ -10,6 +10,11 @@ type RoomPlayer = {
   online?: boolean;
 };
 
+export type Spectator = {
+  id: string;
+  name: string;
+};
+
 export type Room = {
   id: string;
   name: string;
@@ -17,7 +22,7 @@ export type Room = {
   slots: Slots;
   players: Record<Player, RoomPlayer>;
   turn: number;
-  spectators: number;
+  spectators: Spectator[];
   creationDate: Date;
 };
 
