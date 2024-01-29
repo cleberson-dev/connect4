@@ -19,7 +19,8 @@ export const joinRoom = async (
   ws: WebSocket,
   roomId: string,
   connections: RoomsConnectionsMap,
-  password: string
+  password: string,
+  playerName: string
 ): Promise<JoinRoomReturnType> => {
   let me: Player | undefined = undefined;
   let opponent: Player | undefined = undefined;
@@ -69,13 +70,13 @@ export const joinRoom = async (
   // Define which player is this connection
   if (!room.players[Player.ONE].online) {
     room.players[Player.ONE] = {
-      name: "Player 1",
+      name: playerName,
       online: true,
     };
     [me, opponent] = [Player.ONE, Player.TWO];
   } else if (!room.players[Player.TWO].online) {
     room.players[Player.TWO] = {
-      name: "Player 2",
+      name: playerName,
       online: true,
     };
     [me, opponent] = [Player.TWO, Player.ONE];
