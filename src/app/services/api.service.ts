@@ -20,7 +20,7 @@ const api = axios.create({
 });
 
 const routes = {
-  getRooms: () => api.get<GetRoomsResponse>("/rooms"),
+  getRooms: () => api.get<GetRoomsResponse>("/rooms").then((res) => res.data),
   createRoom: (name: string, password: string) =>
     api.post<CreateRoomResponse>("/rooms", { name, password }),
 };

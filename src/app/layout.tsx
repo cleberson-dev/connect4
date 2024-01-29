@@ -3,6 +3,9 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import GameContextProvider from "@/app/contexts/Game.context";
 import ModalContextProvider from "./contexts/Modal.context";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,11 +21,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <ModalContextProvider>
-        <GameContextProvider>
-          <body className={inter.className}>{children}</body>
-        </GameContextProvider>
-      </ModalContextProvider>
+      <QueryClientProvider client={queryClient}>
+        <ModalContextProvider>
+          <GameContextProvider>
+            <body className={inter.className}>{children}</body>
+          </GameContextProvider>
+        </ModalContextProvider>
+      </QueryClientProvider>
     </html>
   );
 }
