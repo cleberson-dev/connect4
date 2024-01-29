@@ -24,6 +24,7 @@
     "react-dom": "^18",
     "react-hook-form": "^7.49.3",
     "react-spinners": "^0.13.8",
+    "react-toastify": "^10.0.4",
     "redis": "^4.6.12",
     "short-uuid": "^4.2.2",
     "ws": "^8.16.0"

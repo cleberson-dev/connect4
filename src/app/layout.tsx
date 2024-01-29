@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "./globals.css";
 import GameContextProvider from "@/app/contexts/Game.context";
-import ModalContextProvider from "./contexts/Modal.context";
+import ModalContextProvider from "@/app/contexts/Modal.context";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import "./globals.css";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +30,8 @@ export default function RootLayout({
           </GameContextProvider>
         </ModalContextProvider>
       </QueryClientProvider>
+
+      <ToastContainer />
     </html>
   );
 }
