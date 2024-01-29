@@ -101,9 +101,23 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
   const isEveryPlayerOnline = Object.values(game.state.players).every(
     (player) => player.online
   );
+  const isGamePlayable =
+    !isSpectator && !game.isGameOver && isEveryPlayerOnline;
+
   const shareRoom = () => {
     const url = window.location.href;
     navigator.clipboard.writeText(url);
+  };
+
+  const onRestartGame = () => {
+    ws.sendMessage("RESTART_GAME");
+    game.restartGame();
+  };
+
+  const onColumnClick = (colNumber: number) => {
+    ws.sendMessage("SET_PIECE", { colNumber });
+    game.addPiece(colNumber);
+    game.goNextTurn();
   };
 
   if (loading.isLoading) return <LoadingModal />;
@@ -111,25 +125,15 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
 
   return (
     <>
-      <GameHud
-        isSpectator={isSpectator}
-        onRestart={() => {
-          ws.sendMessage("RESTART_GAME");
-          game.restartGame();
-        }}
-      />
+      <GameHud isSpectator={isSpectator} onRestart={onRestartGame} />
       <main className="flex h-[100svh] flex-col items-center justify-center">
         <Board
           player={game.state.me}
           turnPlayer={game.turnPlayer}
           gameWinner={game.gameWinner}
           slots={game.state.slots}
-          playable={!isSpectator && !game.isGameOver && isEveryPlayerOnline}
-          onColumnClick={(colNumber) => {
-            ws.sendMessage("SET_PIECE", { colNumber });
-            game.addPiece(colNumber);
-            game.goNextTurn();
-          }}
+          playable={isGamePlayable}
+          onColumnClick={onColumnClick}
         />
       </main>
       <footer className="fixed bottom-0 p-2 w-full flex justify-between items-center">
