@@ -37,9 +37,9 @@ export default function ModalContextProvider({
     <ModalContext.Provider value={{ showModal, hideModal }}>
       {content && (
         <div
+          className="z-50 fixed w-full h-full flex flex-col items-center justify-center"
           ref={containerRef}
           onClick={containerClickHandler}
-          className="z-50 fixed w-full h-full flex flex-col items-center justify-center"
         >
           {content}
         </div>
