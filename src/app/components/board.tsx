@@ -59,7 +59,7 @@ export default function Board({
                 key={rowNumber}
                 player={player}
                 turnPlayer={turnPlayer}
-                playable={playable}
+                hoverable={playable && isPlayersTurn}
                 highlighted={isPieceHighlighted(player, colNumber, rowNumber)}
               />
             ))}

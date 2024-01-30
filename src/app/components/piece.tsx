@@ -3,11 +3,11 @@ import { Player } from "@/shared/types";
 
 type PieceProps = {
   player: Player | null;
-  turnPlayer?: Player;
+  turnPlayer: Player;
   onClick?: () => void;
   size?: "sm" | "base";
   highlighted?: boolean;
-  playable?: boolean;
+  hoverable?: boolean;
 };
 
 const hoverClassesByPlayer = {
@@ -33,17 +33,16 @@ export default function Piece({
   onClick,
   size = "base",
   highlighted,
-  playable,
+  hoverable,
 }: PieceProps) {
   const isEmpty = player === null;
-  const isPlayersTurn = player === turnPlayer;
 
   const className = cls(
     "inline-block border-solid border-black rounded-full",
     highlighted ? "border-4" : "border-3",
     classesBySize[size],
     player ? classesByPlayer[player] : "bg-slate-200",
-    playable && isEmpty && isPlayersTurn && hoverClassesByPlayer[turnPlayer!]
+    hoverable && isEmpty && hoverClassesByPlayer[turnPlayer!]
   );
 
   if (isEmpty) return <span onClick={onClick} className={className}></span>;
