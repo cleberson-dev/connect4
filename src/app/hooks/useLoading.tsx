@@ -1,6 +1,6 @@
+import { useState } from "react";
 import { useModal } from "@/app/contexts/Modal.context";
 import LoadingModal from "@/app/modals/loading.modal";
-import { useState } from "react";
 
 export default function useLoading() {
   const [isLoading, setIsLoading] = useState(false);

@@ -1,14 +1,16 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+
 import { useModal } from "@/app/contexts/Modal.context";
 
 import RoomsListModal from "@/app/modals/rooms-list.modal";
 import CreateRoomModal from "@/app/modals/create-room.modal";
 
 import apiService from "@/app/services/api.service";
-import useLoading from "./hooks/useLoading";
-import { useForm } from "react-hook-form";
+import useLoading from "@/app/hooks/useLoading";
+import { useEffect } from "react";
 
 export default function Home() {
   const router = useRouter();
@@ -18,12 +20,17 @@ export default function Home() {
     register,
     getValues,
     formState: { isValid },
+    setValue,
   } = useForm({
     defaultValues: {
-      name: sessionStorage.getItem("name") ?? "",
+      name: "",
     },
     mode: "onChange",
   });
+
+  useEffect(() => {
+    setValue("name", sessionStorage.getItem("name") ?? "");
+  }, []);
 
   const saveNameInSession = () => {
     const { name } = getValues();
@@ -61,7 +68,7 @@ export default function Home() {
     <main className="flex h-[100svh] flex-col items-center justify-center text-center">
       <h1 className="text-5xl font-black">Connect4</h1>
       <input
-        className="p-2 rounded"
+        className="p-2 rounded mt-4"
         placeholder="Your name"
         {...register("name", { min: 4, max: 16, required: true })}
       />
