@@ -22,16 +22,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <ModalContextProvider>
+      <QueryProvider>
         <GameContextProvider>
-          <QueryProvider>
-            <body className={inter.className}>
-              {children}
-              <ToastContainer />
-            </body>
-          </QueryProvider>
+          <body className={inter.className}>
+            <ModalContextProvider>{children}</ModalContextProvider>
+            <ToastContainer />
+          </body>
         </GameContextProvider>
-      </ModalContextProvider>
+      </QueryProvider>
     </html>
   );
 }
