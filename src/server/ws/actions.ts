@@ -55,7 +55,8 @@ export const joinRoom = async (
     await saveRoom(room);
 
     // Send Back Message with Current Game State
-    sendMessage(ws, ResponseActionType.JOINED_ROOM, room);
+    const gameState = { ...room, password: undefined };
+    sendMessage(ws, ResponseActionType.JOINED_ROOM, gameState);
 
     // Notify spectators entrance to the rest of the room
     flatRoomConnections(connections.get(roomId)!).forEach((connection) => {
@@ -88,7 +89,8 @@ export const joinRoom = async (
   await saveRoom(room);
 
   // Send Back Message with Current Game State
-  sendMessage(ws, ResponseActionType.JOINED_ROOM, { ...room, me });
+  const gameState = { ...room, me, password: undefined };
+  sendMessage(ws, ResponseActionType.JOINED_ROOM, gameState);
 
   // Notify the opponent and spectators
   const payload = {
