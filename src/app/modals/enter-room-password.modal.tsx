@@ -16,13 +16,16 @@ export default function EnterRoomPasswordModal({
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <label>Enter room password</label>
+    <form className="flex flex-col gap-y-2" onSubmit={handleSubmit(onSubmit)}>
       <input
         type="password"
+        className="p-2 rounded border"
+        placeholder="Enter room's password"
         {...register("password", { min: 4, max: 10, required: true })}
       />
-      <button className="p-2 bg-blue-500 rounded shadow-sm">Enter room</button>
+      <button className="p-2 bg-blue-500 text-white rounded shadow-sm">
+        Enter room
+      </button>
     </form>
   );
 }
