@@ -45,9 +45,8 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
             password,
             name,
           });
-          modal.hideModal();
-          loading.showLoading();
           setIsEnteringPassword(false);
+          loading.showLoading();
         }}
       />,
       { closable: false }
