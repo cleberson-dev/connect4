@@ -1,4 +1,5 @@
 import { WebSocketServer } from "ws";
+import dotenv from "dotenv";
 
 import {
   flatRoomConnections,
@@ -10,6 +11,8 @@ import * as actionHandlers from "@/server/ws/actions";
 import { RoomsConnectionsMap, WsConnectionState } from "@/server/types";
 
 import { RequestActionType, ResponseActionType } from "@/shared/types";
+
+dotenv.config();
 
 const { WS_PORT } = process.env;
 const port = WS_PORT ? +WS_PORT : 8080;

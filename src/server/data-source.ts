@@ -2,6 +2,9 @@ import { createClient } from "redis";
 import short from "short-uuid";
 import { Player, Room } from "@/shared/types";
 import { createFreshSlots } from "@/server/utils";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const LIMIT_ROOMS = 50;
 
@@ -27,7 +30,7 @@ export const createRoom = async (name: string, password: string) => {
       [Player.TWO]: {},
     },
     turn: 0,
-    spectators: 0,
+    spectators: [],
     creationDate: new Date(),
   };
 

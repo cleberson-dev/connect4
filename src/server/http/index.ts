@@ -2,6 +2,9 @@ import express from "express";
 import cors from "cors";
 import { createRoom, getRoomsList } from "@/server/data-source";
 import * as schemas from "@/server/http/schemas";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const PORT = process.env.HTTP_PORT || 5000;
 
