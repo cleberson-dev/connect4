@@ -28,7 +28,7 @@ app.post("/rooms", async (req, res) => {
 
   const { error } = schemas.createRoomSchema.validate({ name, password });
   if (error) {
-    return res.sendStatus(400).json({ message: error });
+    return res.status(400).json({ message: error });
   }
 
   const room = await createRoom(name, password);
