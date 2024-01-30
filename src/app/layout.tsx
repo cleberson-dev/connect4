@@ -25,12 +25,13 @@ export default function RootLayout({
       <ModalContextProvider>
         <GameContextProvider>
           <QueryProvider>
-            <body className={inter.className}>{children}</body>
+            <body className={inter.className}>
+              {children}
+              <ToastContainer />
+            </body>
           </QueryProvider>
         </GameContextProvider>
       </ModalContextProvider>
-
-      <ToastContainer />
     </html>
   );
 }
