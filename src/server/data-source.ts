@@ -82,7 +82,7 @@ export const getRoomsList = async () => {
       name: room!.name,
       players: Object.values(room!.players).filter((player) => player.online)
         .length,
-      spectators: room!.spectators,
+      spectators: room!.spectators.length,
       creationDate: room!.creationDate,
     }));
 };
