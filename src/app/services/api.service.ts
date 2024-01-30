@@ -3,9 +3,10 @@ import { Room } from "@/shared/types";
 
 export type ApiRoom = Omit<
   Room,
-  "slots" | "players" | "creationDate" | "password"
+  "slots" | "players" | "creationDate" | "password" | "spectators"
 > & {
   players: number;
+  spectators: number;
   creationDate: string;
 };
 

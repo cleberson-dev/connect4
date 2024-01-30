@@ -23,7 +23,13 @@ export default function RoomsListModal() {
 
   return (
     <div className="bg-white w-3/4 h-3/4">
-      {isPending ? <p>Loading rooms...</p> : <RoomsList rooms={rooms} />}
+      {isPending ? (
+        <div className="h-full flex items-center justify-center">
+          <p className="text-black/50 italic lowercase">Retrieving rooms...</p>
+        </div>
+      ) : (
+        <RoomsList rooms={rooms} />
+      )}
     </div>
   );
 }

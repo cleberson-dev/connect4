@@ -11,7 +11,12 @@ type RoomsListProps = {
 };
 
 export default function RoomsList({ rooms }: RoomsListProps) {
-  if (rooms.length === 0) return <p>No rooms Available</p>;
+  if (rooms.length === 0)
+    return (
+      <div className="flex items-center justify-center h-full">
+        <p className="font-bold uppercase text-sm">No rooms Available</p>
+      </div>
+    );
 
   return (
     <ul>
