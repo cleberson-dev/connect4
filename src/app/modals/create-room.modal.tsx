@@ -18,21 +18,26 @@ export default function CreateRoomModal({ onCreate }: CreateRoomModalProps) {
 
   return (
     <form
-      className="bg-white p-4 shadow-sm rounded"
+      className="bg-white p-8 shadow-sm rounded flex flex-col gap-y-2"
       onSubmit={handleSubmit(onSubmit)}
     >
-      <div className="flex flex-col">
-        <label>Name</label>
-        <input {...register("name", { min: 4, max: 16, required: true })} />
-      </div>
-      <div className="flex flex-col">
-        <label>Set a password for your room</label>
-        <input
-          type="password"
-          {...register("password", { min: 4, max: 10, required: true })}
-        />
-      </div>
-      <button disabled={!isValid}>Create Room</button>
+      <input
+        className="p-2 rounded border border-solid"
+        placeholder="Your Room Name"
+        {...register("name", { min: 4, max: 16, required: true })}
+      />
+      <input
+        type="password"
+        placeholder="Enter a password for your room"
+        className="p-2 rounded border border-solid"
+        {...register("password", { min: 4, max: 10, required: true })}
+      />
+      <button
+        className="p-2 rounded shadow-sm bg-blue-500 text-white"
+        disabled={!isValid}
+      >
+        Create Room
+      </button>
     </form>
   );
 }
