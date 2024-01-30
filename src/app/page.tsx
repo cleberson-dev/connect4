@@ -58,6 +58,7 @@ export default function Home() {
       const {
         data: { id: roomId },
       } = await apiService.createRoom(name, password);
+      sessionStorage.setItem("roomPassword", password);
       router.push(`/room/${roomId}`);
     } catch (err) {
       console.error("Room, Failed on Creation: ", err);
@@ -74,7 +75,7 @@ export default function Home() {
       <input
         className="p-2 rounded mt-4"
         placeholder="Your name"
-        {...register("name", { min: 4, max: 16, required: true })}
+        {...register("name", { minLength: 4, maxLength: 16, required: true })}
       />
       <button
         className="p-2 rounded shadow-sm bg-blue-500 text-white text-sm mt-5 hover:bg-blue-600 transition-colors"

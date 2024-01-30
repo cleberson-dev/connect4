@@ -17,6 +17,7 @@ import EnterRoomPasswordModal from "@/app/modals/enter-room-password.modal";
 import { RequestActionType, ResponseActionType } from "@/shared/types";
 import useLoading from "@/app/hooks/useLoading";
 import { Tooltip } from "react-tooltip";
+import { join } from "path";
 
 export default function RoomPage({ params }: { params: { roomId: string } }) {
   const { roomId } = params;
@@ -30,23 +31,28 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
   const modal = useModal();
   const loading = useLoading();
 
+  const joinRoom = (name: string, password: string) => {
+    ws.sendMessage(RequestActionType.JOIN_ROOM, {
+      roomId,
+      password,
+      name,
+    });
+    setIsEnteringPassword(false);
+    loading.showLoading();
+  };
+
   useEffect(() => {
-    const name = sessionStorage.getItem("name");
-    if (!name) {
-      alert("You should have a name");
-      return router.replace("/");
-    }
+    const name = sessionStorage.getItem("name") ?? "";
+    const password = sessionStorage.getItem("roomPassword") ?? "";
+
+    if (name && password) return joinRoom(name, password);
 
     modal.showModal(
       <EnterRoomPasswordModal
-        onConfirm={(password) => {
-          ws.sendMessage(RequestActionType.JOIN_ROOM, {
-            roomId,
-            password,
-            name,
-          });
-          setIsEnteringPassword(false);
-          loading.showLoading();
+        onConfirm={(name, password) => {
+          sessionStorage.setItem("name", password);
+          sessionStorage.setItem("password", password);
+          joinRoom(name, password);
         }}
       />,
       { closable: false }

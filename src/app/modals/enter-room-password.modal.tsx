@@ -1,18 +1,34 @@
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import cls from "classnames";
 
 type EnterRoomPasswordModalProps = {
-  onConfirm: (password: string) => void;
+  onConfirm: (name: string, password: string) => void;
 };
 
 export default function EnterRoomPasswordModal({
   onConfirm,
 }: EnterRoomPasswordModalProps) {
-  const { register, handleSubmit } = useForm({
-    defaultValues: { password: "" },
+  const { register, handleSubmit, setValue } = useForm({
+    defaultValues: { name: "", password: "" },
   });
+  const [hideName, setHideName] = useState(false);
+  const [hidePassword, setHidePassword] = useState(false);
+
+  useEffect(() => {
+    const name = sessionStorage.getItem("name") ?? "";
+    const password = sessionStorage.getItem("roomPassword") ?? "";
+
+    setValue("name", name);
+    setHideName(!!name);
+
+    setValue("password", password);
+    setHidePassword(!!password);
+  }, []);
 
   const onSubmit: Parameters<typeof handleSubmit>[0] = (values) => {
-    onConfirm(values.password);
+    const { name, password } = values;
+    onConfirm(name, password);
   };
 
   return (
@@ -21,10 +37,19 @@ export default function EnterRoomPasswordModal({
       onSubmit={handleSubmit(onSubmit)}
     >
       <input
+        className={cls("p-2 rounded border", { hidden: hideName })}
+        placeholder="Enter your name"
+        {...register("name", { minLength: 4, maxLength: 16, required: true })}
+      />
+      <input
         type="password"
-        className="p-2 rounded border"
+        className={cls("p-2 rounded border", { hidden: hidePassword })}
         placeholder="Enter room's password"
-        {...register("password", { min: 4, max: 10, required: true })}
+        {...register("password", {
+          minLength: 4,
+          maxLength: 10,
+          required: true,
+        })}
       />
       <button className="p-2 bg-blue-500 text-white rounded shadow-sm">
         Enter room
