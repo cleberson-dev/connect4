@@ -44,7 +44,7 @@ server.on("connection", (ws) => {
         if (!result) break;
 
         const [me, opponent, spectatorId] = result;
-        connectionState = { me, opponent, spectatorId };
+        connectionState = { me, opponent, spectatorId, roomId };
 
         break;
       }
