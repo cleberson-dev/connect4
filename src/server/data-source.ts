@@ -79,6 +79,7 @@ export const getRoomsList = async () => {
     )
     .map((room) => ({
       id: room!.id,
+      name: room!.name,
       players: Object.values(room!.players).filter((player) => player.online)
         .length,
       spectators: room!.spectators,
