@@ -25,6 +25,7 @@ server.on("listening", () => {
 const connections: RoomsConnectionsMap = new Map();
 server.on("connection", (ws) => {
   let connectionState: WsConnectionState = {};
+  const getConnectionState = () => connectionState;
 
   ws.on("error", console.error);
   ws.on("message", async (data) => {
@@ -72,7 +73,7 @@ server.on("connection", (ws) => {
   });
 
   ws.on("close", async () => {
-    const { roomId, me, opponent, spectatorId } = connectionState;
+    const { roomId, me, opponent, spectatorId } = getConnectionState();
 
     const room = await getRoom(roomId!);
     if (!room) return;
