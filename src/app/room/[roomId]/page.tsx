@@ -49,7 +49,8 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
           loading.showLoading();
           setIsEnteringPassword(false);
         }}
-      />
+      />,
+      { closable: false }
     );
   }, []);
 

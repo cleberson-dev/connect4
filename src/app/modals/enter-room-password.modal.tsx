@@ -16,7 +16,10 @@ export default function EnterRoomPasswordModal({
   };
 
   return (
-    <form className="flex flex-col gap-y-2" onSubmit={handleSubmit(onSubmit)}>
+    <form
+      className="flex flex-col gap-y-2 p-8 bg-white rounded shadow-sm"
+      onSubmit={handleSubmit(onSubmit)}
+    >
       <input
         type="password"
         className="p-2 rounded border"

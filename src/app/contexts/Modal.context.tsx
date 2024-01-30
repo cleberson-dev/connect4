@@ -8,8 +8,12 @@ import {
   useState,
 } from "react";
 
+type Options = {
+  closable?: boolean;
+};
+
 type ModalContextValues = {
-  showModal: (content: React.ReactNode) => void;
+  showModal: (content: React.ReactNode, options?: Options) => void;
   hideModal: () => void;
 };
 
@@ -25,12 +29,19 @@ export default function ModalContextProvider({
 }: React.PropsWithChildren) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [content, setContent] = useState<React.ReactNode | null>(null);
+  const [closable, setClosable] = useState(true);
 
-  const showModal = (newContent: React.ReactNode) => setContent(newContent);
+  const showModal = (
+    newContent: React.ReactNode,
+    options: Options = { closable: true }
+  ) => {
+    setContent(newContent);
+    setClosable(!!options.closable);
+  };
   const hideModal = () => setContent(null);
 
   const containerClickHandler: MouseEventHandler<HTMLDivElement> = (e) => {
-    if (e.target === e.currentTarget) hideModal();
+    if (closable && e.target === e.currentTarget) hideModal();
   };
 
   return (
