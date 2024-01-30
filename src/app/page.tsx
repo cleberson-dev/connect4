@@ -21,6 +21,7 @@ export default function Home() {
     getValues,
     formState: { isValid },
     setValue,
+    trigger,
   } = useForm({
     defaultValues: {
       name: "",
@@ -29,7 +30,10 @@ export default function Home() {
   });
 
   useEffect(() => {
-    setValue("name", sessionStorage.getItem("name") ?? "");
+    const name = sessionStorage.getItem("name") ?? "";
+    if (!name) return;
+    setValue("name", name);
+    trigger("name");
   }, []);
 
   const saveNameInSession = () => {
