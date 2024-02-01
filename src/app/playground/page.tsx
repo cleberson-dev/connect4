@@ -17,7 +17,7 @@ if (isProd) redirect("/");
 export default function PlaygroundPage() {
   const game = useGame();
 
-  useEffect(() => {
+  const newGame = () => {
     game.setState({
       me: Player.ONE,
       players: {
@@ -34,7 +34,9 @@ export default function PlaygroundPage() {
       spectators: [],
       turn: 0,
     });
-  }, []);
+  };
+
+  useEffect(newGame, []);
 
   const toggleMe = () => {
     game.setState((prevGameState) => ({
@@ -51,7 +53,7 @@ export default function PlaygroundPage() {
 
   return (
     <>
-      <GameHud onRestart={game.restartGame} />
+      <GameHud onRestart={newGame} />
       <main className="flex h-[100svh] flex-col items-center justify-center">
         <Board
           player={game.state.me}

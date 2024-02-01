@@ -1,12 +1,13 @@
 import { useState } from "react";
 import Draggable from "react-draggable";
 import cls from "classnames";
-import { useGame } from "../contexts/Game.context";
+import { useGame } from "@/app/contexts/Game.context";
 import { Player } from "@/shared/types";
 
 export default function DraggableGameStateBox() {
   const [collapsed, setCollapsed] = useState(true);
   const game = useGame();
+
   return (
     <Draggable handle="strong">
       <div className="w-40 font-mono text-xs absolute bottom-0">
