@@ -8,6 +8,10 @@ import Board from "@/app/components/board";
 import GameHud from "@/app/components/game-hud";
 import { Player } from "@/shared/types";
 import { createFreshSlots } from "@/server/utils";
+import { redirect } from "next/navigation";
+
+const isProd = process.env.NODE_ENV === "production";
+if (isProd) redirect("/");
 
 export default function PlaygroundPage() {
   const game = useGame();
