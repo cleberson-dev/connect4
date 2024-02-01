@@ -8,6 +8,7 @@ type PieceProps = {
   size?: "sm" | "base";
   highlighted?: boolean;
   hoverable?: boolean;
+  label?: string;
 };
 
 const hoverClassesByPlayer = {
@@ -34,18 +35,24 @@ export default function Piece({
   size = "base",
   highlighted,
   hoverable,
+  label,
 }: PieceProps) {
   const isEmpty = player === null;
 
   const className = cls(
-    "inline-block border-solid border-black rounded-full",
+    "inline-flex border-solid border-black rounded-full font-bold justify-center items-center text-green-700",
     highlighted ? "border-4" : "border-3",
     classesBySize[size],
     player ? classesByPlayer[player] : "bg-slate-200",
     hoverable && isEmpty && hoverClassesByPlayer[turnPlayer!]
   );
 
-  if (isEmpty) return <span onClick={onClick} className={className}></span>;
+  if (isEmpty)
+    return (
+      <span onClick={onClick} className={className}>
+        {label}
+      </span>
+    );
 
   return <div onClick={onClick} className={className}></div>;
 }

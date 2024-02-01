@@ -13,7 +13,9 @@
 - [x] Users that enter through link should be propmted to enter username as well
 - [x] Create a playground room for testing purposes (without WebSockets)
 - [x] Make playground not available in prod
-- [] Add a state info card that is draggalbe (playground)
+- [x] Add a state info card that is draggable (playground)
+- [] Label each piece when empty (playground)
+- [] Add dev/debug actions to simulate events. (playground)
 - [] Refactor WebSocket Use (Implement a hook with context)
 - [] Add Unit tests (Components)
 - [] Add E2E Tests

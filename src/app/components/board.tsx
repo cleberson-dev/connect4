@@ -2,6 +2,9 @@ import cls from "classnames";
 import Piece from "@/app/components/piece";
 import { WinnerCheckerResults } from "@/app/types";
 import { Player, Slots } from "@/shared/types";
+import { getLabelBasedOnSlotPosition } from "@/app/utils";
+
+const isProd = process.env.NODE_ENV === "production";
 
 type BoardProps = {
   slots: Slots;
@@ -61,6 +64,11 @@ export default function Board({
                 turnPlayer={turnPlayer}
                 hoverable={playable && isPlayersTurn}
                 highlighted={isPieceHighlighted(player, colNumber, rowNumber)}
+                label={
+                  !isProd
+                    ? getLabelBasedOnSlotPosition(colNumber, rowNumber)
+                    : ""
+                }
               />
             ))}
           </div>
