@@ -26,7 +26,7 @@ const className = {
 
 type GameHudProps = {
   onRestart: () => void;
-  isSpectator: boolean;
+  isSpectator?: boolean;
 };
 
 const turnText = <strong className={className.turnText}>Turn</strong>;
@@ -48,7 +48,7 @@ export default function GameHud({ onRestart, isSpectator }: GameHudProps) {
         )}
         title={!state.players[Player.ONE].online ? "Waiting for opponent" : ""}
       >
-        <Piece player={Player.ONE} size="sm" />
+        <Piece player={Player.ONE} size="sm" turnPlayer={turnPlayer} />
         <span>
           {state.players[Player.ONE].name || "Player 1"}{" "}
           {!isSpectator && state.me === Player.ONE && `(YOU)`}
@@ -70,7 +70,7 @@ export default function GameHud({ onRestart, isSpectator }: GameHudProps) {
         )} text-right`}
         title={!state.players[Player.TWO].online ? "Waiting for opponent" : ""}
       >
-        <Piece player={Player.TWO} size="sm" />
+        <Piece player={Player.TWO} size="sm" turnPlayer={turnPlayer} />
         <span>
           {state.players[Player.TWO].name || "Player 2"}{" "}
           {!isSpectator && state.me === Player.TWO && `(YOU)`}

@@ -29,7 +29,7 @@ export default function CreateRoomModal({ onCreate }: CreateRoomModalProps) {
       onSubmit={handleSubmit(onSubmit)}
     >
       <input
-        className="p-2 rounded border border-solid"
+        className="block p-2 rounded border border-solid"
         placeholder="Your Room Name"
         {...register("roomName", {
           minLength: 4,
@@ -40,7 +40,7 @@ export default function CreateRoomModal({ onCreate }: CreateRoomModalProps) {
       <input
         type="password"
         placeholder="Enter a password for your room"
-        className="p-2 rounded border border-solid"
+        className="block p-2 rounded border border-solid"
         {...register("roomPassword", {
           minLength: 4,
           maxLength: 10,
@@ -48,7 +48,7 @@ export default function CreateRoomModal({ onCreate }: CreateRoomModalProps) {
         })}
       />
       <button
-        className="p-2 rounded shadow-sm bg-blue-500 text-white disabled:bg-slate-200 disabled:text-black disabled:opacity-50"
+        className="w-full p-2 rounded shadow-sm bg-blue-500 text-white disabled:bg-slate-200 disabled:text-black disabled:opacity-50"
         type="submit"
         disabled={!isValid}
       >

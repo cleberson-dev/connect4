@@ -1,6 +1,13 @@
 "use client";
 
-import { createContext, useContext, useMemo, useState } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  createContext,
+  useContext,
+  useMemo,
+  useState,
+} from "react";
 
 import { Direction, WinnerCheckerResults } from "@/app/types";
 import { Player, Slots, Spectator } from "@/shared/types";
@@ -26,7 +33,7 @@ type GameContextValues = {
   isGameOver: boolean;
 
   // Actions
-  setState: (newState: GameState) => void;
+  setState: Dispatch<SetStateAction<GameState>>;
   addPiece: (colNumber: number) => void;
   updateSlot: (coords: [number, number], player: Player) => void;
   goNextTurn: () => void;
