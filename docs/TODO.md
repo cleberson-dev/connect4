@@ -11,7 +11,9 @@
 - [x] Spectators should be able to add their name
 - [x] Make Room creator enter the room without password
 - [x] Users that enter through link should be propmted to enter username as well
-- [] Create a playground room for testing purposes (without WebSockets)
+- [x] Create a playground room for testing purposes (without WebSockets)
+- [x] Make playground not available in prod
+- [] Add a state info card that is draggalbe (playground)
 - [] Refactor WebSocket Use (Implement a hook with context)
 - [] Add Unit tests (Components)
 - [] Add E2E Tests

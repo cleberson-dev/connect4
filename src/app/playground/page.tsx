@@ -9,6 +9,7 @@ import GameHud from "@/app/components/game-hud";
 import { Player } from "@/shared/types";
 import { createFreshSlots } from "@/server/utils";
 import { redirect } from "next/navigation";
+import DraggableGameStateBox from "../components/draggable-game-state-box";
 
 const isProd = process.env.NODE_ENV === "production";
 if (isProd) redirect("/");
@@ -21,7 +22,7 @@ export default function PlaygroundPage() {
       me: Player.ONE,
       players: {
         [Player.ONE]: {
-          name: "Reginaldo",
+          name: "Cleberson",
           online: true,
         },
         [Player.TWO]: {
@@ -66,6 +67,8 @@ export default function PlaygroundPage() {
           Turn {game.state.turn + 1}
         </p>
       </footer>
+
+      <DraggableGameStateBox />
     </>
   );
 }
