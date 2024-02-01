@@ -64,7 +64,7 @@ export default function PlaygroundPage() {
           onColumnClick={onColumnClick}
         />
       </main>
-      <footer className="fixed bottom-0 p-2 w-full flex justify-center items-center">
+      <footer className="fixed bottom-4 p-2 w-full flex justify-center items-center">
         <p className="absolute w-full text-center">
           Turn {game.state.turn + 1}
         </p>
