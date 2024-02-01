@@ -24,7 +24,7 @@ export default function CreateRoomModal({ onCreate }: CreateRoomModalProps) {
 
   return (
     <form
-      className="bg-white p-8 shadow-sm rounded flex flex-col gap-y-2"
+      className="bg-white p-8 shadow-sm rounded space-y-2"
       autoComplete="off"
       onSubmit={handleSubmit(onSubmit)}
     >
