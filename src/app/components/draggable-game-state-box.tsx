@@ -13,6 +13,8 @@ export default function DraggableGameStateBox() {
       ? "Playing"
       : `Won by ${game.state.players[game.gameWinner.player].name}`;
 
+  const piecesAdded = game.state.turn;
+
   return (
     <Draggable handle="strong">
       <div className="w-40 font-mono text-xs absolute bottom-0">
@@ -47,6 +49,7 @@ export default function DraggableGameStateBox() {
           </div>
           <div>Turn Player: {game.state.players[game.turnPlayer].name}</div>
           <div>Status: {status}</div>
+          <div>Pieces added: {piecesAdded}</div>
         </div>
       </div>
     </Draggable>
