@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import cls from "classnames";
 
 import { useModal } from "@/app/contexts/Modal.context";
 
@@ -15,6 +14,7 @@ import CreateRoomModal from "@/app/modals/create-room.modal";
 import apiService from "@/app/services/api.service";
 import useLoading from "@/app/hooks/useLoading";
 import { toast } from "react-toastify";
+import Input from "@/app/components/input";
 
 const schema = yup.object({
   name: yup.string().required().min(4).max(16),
@@ -87,12 +87,10 @@ export default function Home() {
   return (
     <main className="flex h-[100svh] flex-col items-center justify-center text-center space-y-4 text-sm text-white">
       <h1 className="text-5xl font-black text-black">Connect4</h1>
-      <input
-        className={cls("p-2 bg-gray-100 rounded-md text-black", {
-          "border border-solid border-red-500": errors.name,
-        })}
+      <Input
         placeholder="Your name"
-        {...register("name", { minLength: 4, maxLength: 16, required: true })}
+        invalid={!!errors.name}
+        {...register("name")}
       />
       <button
         className="p-2 rounded shadow-sm bg-blue-500 hover:bg-blue-600 transition-colors"
