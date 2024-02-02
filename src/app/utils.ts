@@ -1,2 +1,3 @@
-export const getLabelBasedOnSlotPosition = (col: number, row: number) =>
-  `${["ABCDEFGHIJKLMNOPQRSTUVWXYZ"[col]]}${row + 1}`;
+export const getLabelBasedOnSlotPosition =
+  (rowLength: number) => (col: number, row: number) =>
+    `${["ABCDEFGHIJKLMNOPQRSTUVWXYZ"[col]]}${rowLength - row}`;

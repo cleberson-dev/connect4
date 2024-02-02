@@ -40,6 +40,8 @@ export default function Board({
 
   const isPlayersTurn = player === turnPlayer;
 
+  const getLabel = getLabelBasedOnSlotPosition(slots[0].length);
+
   return (
     <>
       <div className="bg-blue-700 rounded shadow flex gap-5 sm:gap-8 p-4 select-none">
@@ -64,11 +66,7 @@ export default function Board({
                 turnPlayer={turnPlayer}
                 hoverable={playable && isPlayersTurn}
                 highlighted={isPieceHighlighted(player, colNumber, rowNumber)}
-                label={
-                  !isProd
-                    ? getLabelBasedOnSlotPosition(colNumber, rowNumber)
-                    : ""
-                }
+                label={!isProd ? getLabel(colNumber, rowNumber) : ""}
               />
             ))}
           </div>
