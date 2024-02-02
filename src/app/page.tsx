@@ -4,17 +4,18 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { toast } from "react-toastify";
 import * as yup from "yup";
 
 import { useModal } from "@/app/contexts/Modal.context";
+import { useLoading } from "@/app/hooks/useLoading";
+
+import Input from "@/app/components/input";
 
 import RoomsListModal from "@/app/modals/rooms-list.modal";
 import CreateRoomModal from "@/app/modals/create-room.modal";
 
 import apiService from "@/app/services/api.service";
-import useLoading from "@/app/hooks/useLoading";
-import { toast } from "react-toastify";
-import Input from "@/app/components/input";
 
 const schema = yup.object({
   name: yup.string().required().min(4).max(16),

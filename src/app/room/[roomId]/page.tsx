@@ -3,10 +3,12 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { LinkIcon, EyeIcon } from "@heroicons/react/16/solid";
+import { Tooltip } from "react-tooltip";
 
 import { useGame, GameState } from "@/app/contexts/Game.context";
 import { useModal } from "@/app/contexts/Modal.context";
 import { useWebSockets } from "@/app/hooks/useWebSocket";
+import { useLoading } from "@/app/hooks/useLoading";
 
 import Board from "@/app/components/board";
 import GameHud from "@/app/components/game-hud";
@@ -15,9 +17,6 @@ import LoadingModal from "@/app/modals/loading.modal";
 import EnterRoomPasswordModal from "@/app/modals/enter-room-password.modal";
 
 import { RequestActionType, ResponseActionType } from "@/shared/types";
-import useLoading from "@/app/hooks/useLoading";
-import { Tooltip } from "react-tooltip";
-import { join } from "path";
 
 export default function RoomPage({ params }: { params: { roomId: string } }) {
   const { roomId } = params;
