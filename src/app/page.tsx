@@ -1,7 +1,11 @@
 "use client";
 
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import cls from "classnames";
 
 import { useModal } from "@/app/contexts/Modal.context";
 
@@ -10,7 +14,11 @@ import CreateRoomModal from "@/app/modals/create-room.modal";
 
 import apiService from "@/app/services/api.service";
 import useLoading from "@/app/hooks/useLoading";
-import { useEffect } from "react";
+import { toast } from "react-toastify";
+
+const schema = yup.object({
+  name: yup.string().required().min(4).max(16),
+});
 
 export default function Home() {
   const router = useRouter();
@@ -19,15 +27,22 @@ export default function Home() {
   const {
     register,
     getValues,
-    formState: { isValid },
+    formState: { errors },
     setValue,
     trigger,
+    handleSubmit,
   } = useForm({
     defaultValues: {
       name: "",
     },
-    mode: "onChange",
+    resolver: yupResolver(schema),
   });
+
+  useEffect(() => {
+    Object.values(errors).forEach((error) => {
+      toast.error(error.message);
+    });
+  }, [errors]);
 
   useEffect(() => {
     const name = sessionStorage.getItem("name") ?? "";
@@ -70,24 +85,24 @@ export default function Home() {
   if (loading.isLoading) return null;
 
   return (
-    <main className="flex h-[100svh] flex-col items-center justify-center text-center space-y-4 text-sm">
-      <h1 className="text-5xl font-black">Connect4</h1>
+    <main className="flex h-[100svh] flex-col items-center justify-center text-center space-y-4 text-sm text-white">
+      <h1 className="text-5xl font-black text-black">Connect4</h1>
       <input
-        className="p-2 bg-gray-100 rounded-md border-0"
+        className={cls("p-2 bg-gray-100 rounded-md text-black", {
+          "border border-solid border-red-500": errors.name,
+        })}
         placeholder="Your name"
         {...register("name", { minLength: 4, maxLength: 16, required: true })}
       />
       <button
-        className="p-2 rounded shadow-sm bg-blue-500 text-white hover:bg-blue-600 transition-colors"
-        onClick={openCreateRoomModal}
-        disabled={!isValid}
+        className="p-2 rounded shadow-sm bg-blue-500 hover:bg-blue-600 transition-colors"
+        onClick={handleSubmit(openCreateRoomModal)}
       >
         Create Room
       </button>
       <button
-        className="p-2 rounded shadow-sm bg-orange-500 text-white hover:bg-orange-600 transition-colors"
-        onClick={openRoomsListModal}
-        disabled={!isValid}
+        className="p-2 rounded shadow-sm bg-orange-500 hover:bg-orange-600 transition-colors"
+        onClick={handleSubmit(openRoomsListModal)}
       >
         Join Room
       </button>
