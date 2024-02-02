@@ -6,14 +6,23 @@ import { Player } from "@/shared/types";
 
 export default function DraggableGameStateBox() {
   const [collapsed, setCollapsed] = useState(true);
-  const game = useGame();
+  const { state, gameWinner, turnPlayer } = useGame();
 
   const status =
-    game.gameWinner === null
+    gameWinner === null
       ? "Playing"
-      : `Won by ${game.state.players[game.gameWinner.player].name}`;
+      : `Won by ${state.players[gameWinner.player].name}`;
 
-  const piecesAdded = game.state.turn;
+  const turn = state.turn + 1;
+
+  const meText = state.me === null ? "No one" : state.players[state.me].name;
+  const player1 = `${state.players[Player.ONE].name} (
+    ${state.players[Player.ONE].online ? "Online" : "Offline"})`;
+
+  const player2 = `${state.players[Player.TWO].name} (
+    ${state.players[Player.TWO].online ? "Online" : "Offline"})`;
+
+  const piecesAdded = state.turn;
 
   return (
     <Draggable handle="strong">
@@ -32,22 +41,11 @@ export default function DraggableGameStateBox() {
             hidden: collapsed,
           })}
         >
-          <div>Turn: {game.state.turn + 1}</div>
-          <div>
-            Player 1: {game.state.players[Player.ONE].name} (
-            {game.state.players[Player.ONE].online ? "Online" : "Offline"})
-          </div>
-          <div>
-            Player 2: {game.state.players[Player.TWO].name} (
-            {game.state.players[Player.TWO].online ? "Online" : "Offline"})
-          </div>
-          <div>
-            Me:{" "}
-            {game.state.me === null
-              ? "No one"
-              : game.state.players[game.state.me].name}
-          </div>
-          <div>Turn Player: {game.state.players[game.turnPlayer].name}</div>
+          <div>Turn: {turn}</div>
+          <div>Player 1: {player1}</div>
+          <div>Player 2: {player2}</div>
+          <div>Me: {meText}</div>
+          <div>Turn Player: {state.players[turnPlayer].name}</div>
           <div>Status: {status}</div>
           <div>Pieces added: {piecesAdded}</div>
         </div>
