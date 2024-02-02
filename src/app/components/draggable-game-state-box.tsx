@@ -16,11 +16,13 @@ export default function DraggableGameStateBox() {
   const turn = state.turn + 1;
 
   const meText = state.me === null ? "No one" : state.players[state.me].name;
-  const player1 = `${state.players[Player.ONE].name} (
-    ${state.players[Player.ONE].online ? "Online" : "Offline"})`;
+  const player1 = `${state.players[Player.ONE].name} (${
+    state.players[Player.ONE].online ? "Online" : "Offline"
+  })`;
 
-  const player2 = `${state.players[Player.TWO].name} (
-    ${state.players[Player.TWO].online ? "Online" : "Offline"})`;
+  const player2 = `${state.players[Player.TWO].name} (${
+    state.players[Player.TWO].online ? "Online" : "Offline"
+  })`;
 
   const piecesAdded = state.turn;
 
