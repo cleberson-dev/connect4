@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 
-import apiService from "@/app/services/api.service";
 import RoomsList from "@/app/components/rooms-list";
 
 export default function RoomsListModal() {
@@ -12,7 +11,7 @@ export default function RoomsListModal() {
     error,
   } = useQuery({
     queryKey: ["rooms"],
-    queryFn: () => apiService.getRooms(),
+    queryFn: () => fetch("/api/rooms").then((res) => res.json()),
   });
 
   useEffect(() => {

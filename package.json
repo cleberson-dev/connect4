@@ -8,8 +8,7 @@
     "lint": "next lint",
     "dev": "concurrently \"npm run dev:*\"",
     "dev:app": "next dev",
-    "dev:ws": "nodemon ./src/server/ws/index.ts",
-    "dev:http": "nodemon ./src/server/http/index.ts"
+    "dev:ws": "nodemon ./src/server/ws/index.ts"
   },
   "dependencies": {
     "@heroicons/react": "^2.1.1",
