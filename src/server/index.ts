@@ -6,7 +6,7 @@ import {
   parseWsMessage,
   sendMessage,
 } from "@/server/utils";
-import { getRoom, removeRoom, saveRoom } from "@/server/data-source";
+import { getRoom, removeRoom, saveRoom } from "@/shared/utils/data";
 import * as actionHandlers from "@/server/actions";
 import { RoomsConnectionsMap, WsConnectionState } from "@/server/types";
 

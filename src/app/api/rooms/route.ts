@@ -1,4 +1,4 @@
-import { getRoomsList } from "@/server/data-source";
+import { getRoomsList } from "@/shared/utils/data";
 
 export async function GET() {
   const rooms = await getRoomsList();

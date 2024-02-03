@@ -1,5 +1,7 @@
 import cls from "classnames";
+
 import Piece from "@/shared/components/piece";
+
 import { WinnerCheckerResults } from "@/shared/types";
 import { Player, Slots } from "@/shared/types";
 import { getLabelBasedOnSlotPosition } from "@/shared/utils";

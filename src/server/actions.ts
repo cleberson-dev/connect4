@@ -1,11 +1,11 @@
 import { WebSocket } from "ws";
 
-import { flatRoomConnections, markSlot, sendMessage } from "@/server/utils";
-import { getRoom, saveRoom } from "@/server/data-source";
 import { RoomsConnectionsMap } from "@/server/types";
-
 import { Player, ResponseActionType } from "@/shared/types";
+
 import { createFreshSlots, createSpectator } from "@/shared/utils";
+import { getRoom, saveRoom } from "@/shared/utils/data";
+import { flatRoomConnections, markSlot, sendMessage } from "@/server/utils";
 
 type JoinRoomReturnType =
   | [Player | undefined, Player | undefined, string | undefined]

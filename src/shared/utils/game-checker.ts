@@ -1,37 +1,9 @@
-import short from "short-uuid";
 import {
   Direction,
-  GameCheckerFn,
-  Player,
   Slots,
-  Spectator,
+  GameCheckerFn,
   WinnerCheckerResults,
 } from "@/shared/types";
-import { GameState } from "./contexts/Game.context";
-
-const [COLS, ROWS] = [7, 6];
-
-export const getLabelBasedOnSlotPosition =
-  (rowLength: number) => (col: number, row: number) =>
-    `${["ABCDEFGHIJKLMNOPQRSTUVWXYZ"[col]]}${rowLength - row}`;
-
-export const createSpectator = (name: string): Spectator => {
-  return {
-    id: short.generate(),
-    name,
-  };
-};
-
-export const createFreshSlots = (cols: number = COLS, rows: number = ROWS) => {
-  const slots: Slots = [];
-  for (let i = 0; i < cols; i += 1) {
-    slots[i] = [];
-    for (let j = 0; j < rows; j += 1) {
-      slots[i][j] = null;
-    }
-  }
-  return slots;
-};
 
 const getAllDirections = ([i, j]: [number, number]) => {
   return {
@@ -46,7 +18,7 @@ const getAllDirections = ([i, j]: [number, number]) => {
   } as const;
 };
 
-export const checkGame = (slots: Slots) => {
+const checkGame = (slots: Slots) => {
   const gameChecker: GameCheckerFn = ({
     player,
     currentCoord: [i, j],
@@ -108,25 +80,3 @@ export const whoWon = (slots: Slots): WinnerCheckerResults | null => {
   }
   return null;
 };
-
-const defaultPlaygroundGame = {
-  me: Player.ONE,
-  players: {
-    [Player.ONE]: {
-      name: "Cleberson",
-      online: true,
-    },
-    [Player.TWO]: {
-      name: "Reginaldo",
-      online: true,
-    },
-  },
-  slots: [],
-  spectators: [],
-  turn: 0,
-};
-
-export const getNewPlaygroundGame = (): GameState => ({
-  ...defaultPlaygroundGame,
-  slots: createFreshSlots(),
-});

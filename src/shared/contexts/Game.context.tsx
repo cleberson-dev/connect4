@@ -10,7 +10,8 @@ import {
 } from "react";
 
 import { WinnerCheckerResults, Player, Slots, Spectator } from "@/shared/types";
-import { createFreshSlots, whoWon } from "@/shared/utils";
+import { createFreshSlots } from "@/shared/utils";
+import { whoWon } from "@/shared/utils/game-checker";
 
 type GameStatePlayer = {
   name?: string;

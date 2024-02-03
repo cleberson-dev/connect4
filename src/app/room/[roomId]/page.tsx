@@ -7,7 +7,7 @@ import { Tooltip } from "react-tooltip";
 
 import { useGame, GameState } from "@/shared/contexts/Game.context";
 import { useModal } from "@/shared/contexts/Modal.context";
-import { useWebSockets } from "@/shared/hooks/useWebSocket";
+import { useWebSockets } from "@/shared/hooks/useWebSockets";
 import { useLoading } from "@/shared/hooks/useLoading";
 
 import Board from "@/shared/components/board";

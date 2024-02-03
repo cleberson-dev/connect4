@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Draggable from "react-draggable";
 import cls from "classnames";
+
 import { useGame } from "@/shared/contexts/Game.context";
 import { Player } from "@/shared/types";
 

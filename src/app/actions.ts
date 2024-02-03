@@ -1,7 +1,7 @@
 "use server";
 
 import { z } from "zod";
-import { createRoom as dsCreateRoom } from "@/server/data-source";
+import { createRoom as dsCreateRoom } from "@/shared/utils/data";
 
 const schemas = {
   createRoom: z.object({
