@@ -7,7 +7,7 @@ import {
   sendMessage,
 } from "@/server/utils";
 import { getRoom, removeRoom, saveRoom } from "@/server/data-source";
-import * as actionHandlers from "@/server/ws/actions";
+import * as actionHandlers from "@/server/actions";
 import { RoomsConnectionsMap, WsConnectionState } from "@/server/types";
 
 import { RequestActionType, ResponseActionType } from "@/shared/types";

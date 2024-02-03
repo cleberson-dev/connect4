@@ -6,12 +6,12 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { toast } from "react-toastify";
 import * as yup from "yup";
 
-import { useModal } from "@/app/contexts/Modal.context";
+import { useModal } from "@/shared/contexts/Modal.context";
 
-import Input from "@/app/components/input";
+import Input from "@/shared/components/input";
 
-import RoomsListModal from "@/app/modals/rooms-list.modal";
-import CreateRoomModal from "@/app/modals/create-room.modal";
+import RoomsListModal from "@/shared/modals/rooms-list.modal";
+import CreateRoomModal from "@/shared/modals/create-room.modal";
 
 const schema = yup.object({
   name: yup.string().required().min(4).max(16),

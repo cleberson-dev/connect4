@@ -4,9 +4,9 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./globals.css";
 
-import ModalContextProvider from "@/app/contexts/Modal.context";
-import GameContextProvider from "@/app/contexts/Game.context";
-import QueryProvider from "@/app/providers/query.provider";
+import ModalContextProvider from "@/shared/contexts/Modal.context";
+import GameContextProvider from "@/shared/contexts/Game.context";
+import QueryProvider from "@/shared/providers/query.provider";
 
 const inter = Inter({ subsets: ["latin"] });
 

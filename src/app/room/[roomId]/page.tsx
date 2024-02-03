@@ -5,16 +5,16 @@ import { useRouter } from "next/navigation";
 import { LinkIcon, EyeIcon } from "@heroicons/react/16/solid";
 import { Tooltip } from "react-tooltip";
 
-import { useGame, GameState } from "@/app/contexts/Game.context";
-import { useModal } from "@/app/contexts/Modal.context";
-import { useWebSockets } from "@/app/hooks/useWebSocket";
-import { useLoading } from "@/app/hooks/useLoading";
+import { useGame, GameState } from "@/shared/contexts/Game.context";
+import { useModal } from "@/shared/contexts/Modal.context";
+import { useWebSockets } from "@/shared/hooks/useWebSocket";
+import { useLoading } from "@/shared/hooks/useLoading";
 
-import Board from "@/app/components/board";
-import GameHud from "@/app/components/game-hud";
+import Board from "@/shared/components/board";
+import GameHud from "@/shared/components/game-hud";
 
-import LoadingModal from "@/app/modals/loading.modal";
-import EnterRoomPasswordModal from "@/app/modals/enter-room-password.modal";
+import LoadingModal from "@/shared/modals/loading.modal";
+import EnterRoomPasswordModal from "@/shared/modals/enter-room-password.modal";
 
 import { RequestActionType, ResponseActionType } from "@/shared/types";
 

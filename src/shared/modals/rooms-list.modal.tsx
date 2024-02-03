@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 
-import RoomsList from "@/app/components/rooms-list";
+import RoomsList from "@/shared/components/rooms-list";
 
 export default function RoomsListModal() {
   const {

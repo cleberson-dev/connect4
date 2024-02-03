@@ -1,3 +1,19 @@
+export enum Direction {
+  UP,
+  DOWN,
+  LEFT,
+  RIGHT,
+  UP_LEFT,
+  UP_RIGHT,
+  DOWN_LEFT,
+  DOWN_RIGHT,
+}
+
+export type WinnerCheckerResults = {
+  player: Player.ONE | Player.TWO;
+  coords: [number, number][];
+};
+
 export enum Player {
   ONE = 1,
   TWO = 2,
@@ -42,3 +58,11 @@ export enum RequestActionType {
   SET_PIECE = "SET_PIECE",
   RESTART_GAME = "RESTART_GAME",
 }
+
+export type GameCheckerFn = (args: {
+  player: Player;
+  currentCoord: [number, number];
+  count?: number;
+  direction?: Direction;
+  lastCoords?: [number, number][];
+}) => WinnerCheckerResults | null;

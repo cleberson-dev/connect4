@@ -3,8 +3,8 @@ import { useFormState } from "react-dom";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 
-import { useModal } from "@/app/contexts/Modal.context";
-import Input from "@/app/components/input";
+import { useModal } from "@/shared/contexts/Modal.context";
+import Input from "@/shared/components/input";
 
 import { createRoom } from "@/app/actions";
 

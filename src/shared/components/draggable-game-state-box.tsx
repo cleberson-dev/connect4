@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Draggable from "react-draggable";
 import cls from "classnames";
-import { useGame } from "@/app/contexts/Game.context";
+import { useGame } from "@/shared/contexts/Game.context";
 import { Player } from "@/shared/types";
 
 export default function DraggableGameStateBox() {
@@ -50,6 +50,11 @@ export default function DraggableGameStateBox() {
           <div>Turn Player: {state.players[turnPlayer].name}</div>
           <div>Status: {status}</div>
           <div>Pieces added: {piecesAdded}</div>
+
+          <hr />
+
+          <button>Add Piece (Random)</button>
+          <button>Show/Hide Label</button>
         </div>
       </div>
     </Draggable>

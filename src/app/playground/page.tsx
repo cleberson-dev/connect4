@@ -3,15 +3,15 @@
 import { useEffect } from "react";
 import { redirect } from "next/navigation";
 
-import { useGame } from "@/app/contexts/Game.context";
+import { useGame } from "@/shared/contexts/Game.context";
 
-import Board from "@/app/components/board";
-import GameHud from "@/app/components/game-hud";
-import DraggableGameStateBox from "@/app/components/draggable-game-state-box";
-import GameFooter from "@/app/components/game-footer";
+import Board from "@/shared/components/board";
+import GameHud from "@/shared/components/game-hud";
+import DraggableGameStateBox from "@/shared/components/draggable-game-state-box";
+import GameFooter from "@/shared/components/game-footer";
 
 import { Player } from "@/shared/types";
-import { createFreshSlots } from "@/server/utils";
+import { getNewPlaygroundGame } from "@/shared/utils";
 
 const isProd = process.env.NODE_ENV === "production";
 if (isProd) redirect("/");
@@ -20,22 +20,7 @@ export default function PlaygroundPage() {
   const game = useGame();
 
   const newGame = () => {
-    game.setState({
-      me: Player.ONE,
-      players: {
-        [Player.ONE]: {
-          name: "Cleberson",
-          online: true,
-        },
-        [Player.TWO]: {
-          name: "Reginaldo",
-          online: true,
-        },
-      },
-      slots: createFreshSlots(),
-      spectators: [],
-      turn: 0,
-    });
+    game.setState(getNewPlaygroundGame());
   };
 
   useEffect(newGame, []);

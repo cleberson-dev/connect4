@@ -1,8 +1,8 @@
 import cls from "classnames";
-import Piece from "@/app/components/piece";
-import { WinnerCheckerResults } from "@/app/types";
+import Piece from "@/shared/components/piece";
+import { WinnerCheckerResults } from "@/shared/types";
 import { Player, Slots } from "@/shared/types";
-import { getLabelBasedOnSlotPosition } from "@/app/utils";
+import { getLabelBasedOnSlotPosition } from "@/shared/utils";
 
 const isProd = process.env.NODE_ENV === "production";
 

@@ -1,9 +1,9 @@
 import { useCallback } from "react";
 import cls from "classnames";
 
-import Piece from "@/app/components/piece";
+import Piece from "@/shared/components/piece";
 
-import { useGame } from "@/app/contexts/Game.context";
+import { useGame } from "@/shared/contexts/Game.context";
 import { Player } from "@/shared/types";
 
 const className = {

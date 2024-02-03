@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import cls from "classnames";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import Input from "@/app/components/input";
+import Input from "@/shared/components/input";
 
 const schema = yup.object({
   name: yup.string().required().min(4).max(16),

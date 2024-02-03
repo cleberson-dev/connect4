@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState } from "react";
-import ModalContainer from "@/app/components/modal-container";
+import ModalContainer from "@/shared/components/modal-container";
 
 type Options = {
   closable?: boolean;
@@ -40,11 +40,11 @@ export default function ModalContextProvider({
 
   return (
     <ModalContext.Provider value={{ showModal, hideModal }}>
-      {content && (
-        <ModalContainer onContainerClick={containerClickHandler}>
-          {content}
-        </ModalContainer>
-      )}
+      <ModalContainer
+        onContainerClick={containerClickHandler}
+        content={content}
+      />
+
       {children}
     </ModalContext.Provider>
   );

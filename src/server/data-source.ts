@@ -1,7 +1,7 @@
 import { createClient } from "redis";
 import short from "short-uuid";
 import { Player, Room } from "@/shared/types";
-import { createFreshSlots } from "@/server/utils";
+import { createFreshSlots } from "@/shared/utils";
 import dotenv from "dotenv";
 
 dotenv.config();

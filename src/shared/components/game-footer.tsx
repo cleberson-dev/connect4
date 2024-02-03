@@ -1,4 +1,4 @@
-import { useGame } from "../contexts/Game.context";
+import { useGame } from "@/shared/contexts/Game.context";
 
 export default function GameFooter() {
   const {
