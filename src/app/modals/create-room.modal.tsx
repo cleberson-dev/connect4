@@ -1,53 +1,53 @@
-import { useForm } from "react-hook-form";
+import { useEffect } from "react";
+import { useFormState } from "react-dom";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
+
+import { useModal } from "@/app/contexts/Modal.context";
 import Input from "@/app/components/input";
-import * as yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
 
-type CreateRoomModalProps = {
-  onCreate: (name: string, password: string) => void;
-};
+import { createRoom } from "@/app/actions";
 
-const schema = yup.object({
-  roomName: yup.string().required().min(4).max(16),
-  roomPassword: yup.string().required().min(4).max(10),
-});
+export default function CreateRoomModal() {
+  const [state, formAction] = useFormState(createRoom, null);
+  const { hideModal } = useModal();
+  const router = useRouter();
 
-export default function CreateRoomModal({ onCreate }: CreateRoomModalProps) {
-  const {
-    register,
-    formState: { isValid },
-    handleSubmit,
-  } = useForm({
-    defaultValues: {
-      roomName: "",
-      roomPassword: "",
-    },
-    resolver: yupResolver(schema),
-  });
+  useEffect(() => {
+    if (!state?.errors) return;
+    Object.values(state?.errors).forEach((error) => toast.error(error));
+  }, [state?.errors]);
 
-  const onSubmit: Parameters<typeof handleSubmit>[0] = ({
-    roomName,
-    roomPassword,
-  }) => {
-    onCreate(roomName, roomPassword);
-  };
+  useEffect(() => {
+    if (!state?.room) return;
+
+    const { id, password } = state.room;
+    sessionStorage.setItem("roomPassword", password);
+    router.push(`/room/${id}`);
+
+    hideModal();
+  }, [state?.room]);
 
   return (
     <form
       className="bg-white p-8 shadow-sm rounded space-y-2"
       autoComplete="off"
-      onSubmit={handleSubmit(onSubmit)}
+      action={formAction}
     >
-      <Input placeholder="Your Room Name" {...register("roomName")} />
+      <Input
+        placeholder="Your Room Name"
+        name="name"
+        invalid={!!state?.errors?.name}
+      />
       <Input
         type="password"
+        name="password"
         placeholder="Enter a password for your room"
-        {...register("roomPassword")}
+        invalid={!!state?.errors?.password}
       />
       <button
         className="w-full p-2 rounded shadow-sm bg-blue-500 text-white disabled:bg-slate-200 disabled:text-black disabled:opacity-50"
         type="submit"
-        disabled={!isValid}
       >
         Create Room
       </button>

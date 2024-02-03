@@ -14,7 +14,8 @@
 - [x] Create a playground room for testing purposes (without WebSockets)
 - [x] Make playground not available in prod
 - [x] Add a state info card that is draggable (playground)
-- [] Label each piece when empty (playground)
+- [x] Label each piece when empty (playground)
+- [] Move to Server Actions 
 - [] Add dev/debug actions to simulate events. (playground)
 - [] Refactor WebSocket Use (Implement a hook with context)
 - [] Add Unit tests (Components)
