@@ -4,7 +4,9 @@ import { GameState } from "@/shared/contexts/Game.context";
 
 const [COLS, ROWS] = [7, 6];
 
-const defaultPlaygroundGame = {
+const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+const DEFAULT_PLAYGROUND_GAME = {
   me: Player.ONE,
   players: {
     [Player.ONE]: {
@@ -22,28 +24,27 @@ const defaultPlaygroundGame = {
 };
 
 export const getLabelBasedOnSlotPosition =
-  (rowLength: number) => (col: number, row: number) =>
-    `${["ABCDEFGHIJKLMNOPQRSTUVWXYZ"[col]]}${rowLength - row}`;
+  (rowLength: number) => (col: number, row: number) => {
+    const letter = ALPHABET[col];
+    const number = rowLength - row;
 
-export const createSpectator = (name: string): Spectator => {
-  return {
-    id: short.generate(),
-    name,
+    return `${letter}${number}`;
   };
-};
+
+export const createSpectator = (name: string): Spectator => ({
+  id: short.generate(),
+  name,
+});
 
 export const createFreshSlots = (cols: number = COLS, rows: number = ROWS) => {
-  const slots: Slots = [];
-  for (let i = 0; i < cols; i += 1) {
-    slots[i] = [];
-    for (let j = 0; j < rows; j += 1) {
-      slots[i][j] = null;
-    }
-  }
+  const slots: Slots = Array.from({ length: cols }, () => {
+    return Array.from({ length: rows }, () => null);
+  });
+
   return slots;
 };
 
 export const getNewPlaygroundGame = (): GameState => ({
-  ...defaultPlaygroundGame,
+  ...DEFAULT_PLAYGROUND_GAME,
   slots: createFreshSlots(),
 });

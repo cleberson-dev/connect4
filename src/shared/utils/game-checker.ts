@@ -5,7 +5,9 @@ import {
   WinnerCheckerResults,
 } from "@/shared/types";
 
-const getAllDirections = ([i, j]: [number, number]) => {
+type AllDirections = Record<Direction, [number, number]>;
+
+const getAllDirections = ([i, j]: [number, number]): AllDirections => {
   return {
     [Direction.UP]: [i, j - 1],
     [Direction.DOWN]: [i, j + 1],
@@ -15,7 +17,7 @@ const getAllDirections = ([i, j]: [number, number]) => {
     [Direction.UP_RIGHT]: [i + 1, j - 1],
     [Direction.DOWN_LEFT]: [i - 1, j + 1],
     [Direction.DOWN_RIGHT]: [i + 1, j + 1],
-  } as const;
+  };
 };
 
 const checkGame = (slots: Slots) => {
