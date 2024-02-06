@@ -38,7 +38,7 @@ export default function PlaygroundPage() {
     toggleMe();
   };
 
-  const isMyTurn = game.state.me === game.turnPlayer;
+  const isGamePlayable = !game.isGameOver && game.turnPlayer === game.state.me;
 
   return (
     <>
@@ -49,7 +49,7 @@ export default function PlaygroundPage() {
           slots={game.state.slots}
           highlightedSlots={game.gameWinner?.coords}
           player={game.state.me!}
-          playable={!game.isGameOver && isMyTurn}
+          playable={isGamePlayable}
           onColumnClick={onColumnClick}
         />
       </main>

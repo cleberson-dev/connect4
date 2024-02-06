@@ -134,9 +134,8 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
       <GameHud isSpectator={isSpectator} onRestart={onRestartGame} />
       <main className="flex h-[100svh] flex-col items-center justify-center">
         <Board
-          player={game.state.me}
-          turnPlayer={game.turnPlayer}
-          gameWinner={game.gameWinner}
+          player={game.state.me!}
+          highlightedSlots={game.gameWinner?.coords}
           slots={game.state.slots}
           playable={isGamePlayable}
           onColumnClick={onColumnClick}
