@@ -3,7 +3,7 @@ import { Player } from "@/shared/types";
 
 type PieceProps = {
   player: Player | null;
-  turnPlayer: Player;
+  hoverPlayer: Player;
   onClick?: () => void;
   size?: "sm" | "base";
   highlighted?: boolean;
@@ -30,7 +30,7 @@ const classesBySize = {
 
 export default function Piece({
   player,
-  turnPlayer,
+  hoverPlayer,
   onClick,
   size = "base",
   highlighted,
@@ -44,7 +44,7 @@ export default function Piece({
     highlighted ? "border-4" : "border-3",
     classesBySize[size],
     player ? classesByPlayer[player] : "bg-slate-200",
-    hoverable && isEmpty && hoverClassesByPlayer[turnPlayer!]
+    hoverable && isEmpty && hoverClassesByPlayer[hoverPlayer!]
   );
 
   if (isEmpty)

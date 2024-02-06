@@ -38,17 +38,18 @@ export default function PlaygroundPage() {
     toggleMe();
   };
 
+  const isMyTurn = game.state.me === game.turnPlayer;
+
   return (
     <>
       <GameHud onRestart={newGame} />
 
       <main className="flex h-[100svh] flex-col items-center justify-center">
         <Board
-          player={game.state.me}
-          turnPlayer={game.turnPlayer}
-          gameWinner={game.gameWinner}
           slots={game.state.slots}
-          playable={!game.isGameOver}
+          highlightedSlots={game.gameWinner?.coords}
+          player={game.state.me!}
+          playable={!game.isGameOver && isMyTurn}
           onColumnClick={onColumnClick}
         />
       </main>
