@@ -37,22 +37,22 @@ export default function Piece({
   hoverable,
   label,
 }: PieceProps) {
-  const isEmpty = player === null;
-
   const className = cls(
     "inline-flex border-solid border-black rounded-full font-bold justify-center items-center text-green-700",
-    highlighted ? "border-4" : "border-3",
     classesBySize[size],
+    highlighted ? "border-4" : "border-3",
     player ? classesByPlayer[player] : "bg-slate-200",
-    hoverable && isEmpty && hoverClassesByPlayer[hoverPlayer!]
+    hoverable && hoverClassesByPlayer[hoverPlayer!]
   );
 
-  if (isEmpty)
-    return (
-      <span onClick={onClick} className={className}>
-        {label}
-      </span>
-    );
+  const isEmpty = player === null;
 
-  return <div onClick={onClick} className={className}></div>;
+  // Changing only the input element type to leverage last-of-type selectors.
+  return isEmpty ? (
+    <span onClick={onClick} className={className}>
+      {label}
+    </span>
+  ) : (
+    <div onClick={onClick} className={className}></div>
+  );
 }

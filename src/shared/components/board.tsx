@@ -11,8 +11,8 @@ type BoardProps = {
   slots: Slots;
   player: Player;
   highlightedSlots?: [number, number][];
-  onColumnClick?: (colNumber: number) => void;
   playable?: boolean;
+  onColumnClick?: (colNumber: number) => void;
 };
 
 export default function Board({
@@ -37,19 +37,18 @@ export default function Board({
         {slots.map((col, colNumber) => (
           <div
             key={colNumber}
-            className={cls("flex flex-col group gap-3 sm:gap-6", {
-              "cursor-pointer": playable && isColFree(colNumber),
-            })}
-            onClick={() =>
-              playable && isColFree(colNumber) && onColumnClick?.(colNumber)
-            }
+            className={cls(
+              { "pointer-events-auto": playable && isColFree(colNumber) },
+              "flex flex-col group gap-3 sm:gap-6 pointer-events-none"
+            )}
+            onClick={() => onColumnClick?.(colNumber)}
           >
             {col.map((colPlayer, rowNumber) => (
               <Piece
                 key={rowNumber}
                 player={colPlayer}
+                hoverable={playable && colPlayer === null}
                 hoverPlayer={player}
-                hoverable={playable}
                 highlighted={isPieceHighlighted(colNumber, rowNumber)}
                 label={!isProd ? getLabel(colNumber, rowNumber) : ""}
               />
