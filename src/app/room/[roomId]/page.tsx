@@ -17,10 +17,15 @@ import LoadingModal from "@/shared/modals/loading.modal";
 import EnterRoomPasswordModal from "@/shared/modals/enter-room-password.modal";
 
 import { RequestActionType, ResponseActionType } from "@/shared/types";
+import GameFooter from "@/shared/components/game-footer";
 
-export default function RoomPage({ params }: { params: { roomId: string } }) {
-  const { roomId } = params;
+type RoomPageProps = {
+  params: {
+    roomId: string;
+  };
+};
 
+export default function RoomPage({ params: { roomId } }: RoomPageProps) {
   const [ísEnteringPassword, setIsEnteringPassword] = useState(true);
 
   const router = useRouter();
@@ -30,11 +35,11 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
   const modal = useModal();
   const loading = useLoading();
 
-  const joinRoom = (name: string, password: string) => {
+  const joinRoom = (playerName: string, password: string) => {
     ws.sendMessage(RequestActionType.JOIN_ROOM, {
       roomId,
       password,
-      name,
+      playerName,
     });
     setIsEnteringPassword(false);
     loading.showLoading();
@@ -62,6 +67,7 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
     const { action } = ws;
 
     if (!action) return;
+
     switch (action.type) {
       case ResponseActionType.JOINED_ROOM: {
         const payload: GameState = action.payload;
@@ -110,18 +116,13 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
   const isGamePlayable =
     !isSpectator && !game.isGameOver && isEveryPlayerOnline;
 
-  const shareRoom = () => {
-    const url = window.location.href;
-    navigator.clipboard.writeText(url);
-  };
-
   const onRestartGame = () => {
-    ws.sendMessage("RESTART_GAME");
+    ws.sendMessage(RequestActionType.RESTART_GAME);
     game.restartGame();
   };
 
   const onColumnClick = (colNumber: number) => {
-    ws.sendMessage("SET_PIECE", { colNumber });
+    ws.sendMessage(RequestActionType.SET_PIECE, { colNumber });
     game.addPiece(colNumber);
     game.goNextTurn();
   };
@@ -141,34 +142,7 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
           onColumnClick={onColumnClick}
         />
       </main>
-      <footer className="fixed bottom-0 p-2 w-full flex justify-between items-center">
-        <div
-          id="spectatorsCount"
-          className="flex items-center text-xs gap-x-1"
-          title={`${game.state.spectators.length} Spectators`}
-        >
-          <EyeIcon className="w-4 h-4" />
-          <span>{game.state.spectators.length}</span>
-        </div>
-        <p className="absolute w-full text-center">
-          Turn {game.state.turn + 1}
-        </p>
-        <button
-          onClick={shareRoom}
-          title="Share Room"
-          className="hover:text-blue-500 z-20"
-        >
-          <LinkIcon className="w-6 h-6" />
-        </button>
-      </footer>
-
-      <Tooltip anchorSelect="#spectatorsCount">
-        <ul>
-          {game.state.spectators.map((spectator) => (
-            <li key={spectator.id}>{spectator.name}</li>
-          ))}
-        </ul>
-      </Tooltip>
+      <GameFooter showSpectators />
     </>
   );
 }

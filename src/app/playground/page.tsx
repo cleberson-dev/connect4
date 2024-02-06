@@ -19,11 +19,11 @@ if (isProd) redirect("/");
 export default function PlaygroundPage() {
   const game = useGame();
 
-  const newGame = () => {
-    game.setState(getNewPlaygroundGame());
-  };
-
   useEffect(newGame, []);
+
+  function newGame() {
+    game.setState(getNewPlaygroundGame());
+  }
 
   const toggleMe = () => {
     game.setState((prevGameState) => ({
@@ -38,22 +38,18 @@ export default function PlaygroundPage() {
     toggleMe();
   };
 
-  const isGamePlayable = !game.isGameOver && game.turnPlayer === game.state.me;
-
   return (
     <>
       <GameHud onRestart={newGame} />
-
       <main className="flex h-[100svh] flex-col items-center justify-center">
         <Board
+          playable={!game.isGameOver}
           slots={game.state.slots}
-          highlightedSlots={game.gameWinner?.coords}
           player={game.state.me!}
-          playable={isGamePlayable}
           onColumnClick={onColumnClick}
+          highlightedSlots={game.gameWinner?.coords}
         />
       </main>
-
       <GameFooter />
 
       <DraggableGameStateBox />
