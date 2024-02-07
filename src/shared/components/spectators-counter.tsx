@@ -1,6 +1,7 @@
 import { EyeIcon } from "@heroicons/react/16/solid";
-import { Spectator } from "@/shared/types";
 import { Tooltip } from "react-tooltip";
+
+import { Spectator } from "@/shared/types";
 
 type Props = {
   spectators: Spectator[];

@@ -2,8 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { LinkIcon, EyeIcon } from "@heroicons/react/16/solid";
-import { Tooltip } from "react-tooltip";
 
 import { useGame, GameState } from "@/shared/contexts/Game.context";
 import { useModal } from "@/shared/contexts/Modal.context";
@@ -109,12 +107,11 @@ export default function RoomPage({ params: { roomId } }: RoomPageProps) {
     }
   }, [ws.action]);
 
-  const isSpectator = game.state.me === null;
   const isEveryPlayerOnline = Object.values(game.state.players).every(
     (player) => player.online
   );
   const isGamePlayable =
-    !isSpectator && !game.isGameOver && isEveryPlayerOnline;
+    !game.isSpectator && !game.isGameOver && isEveryPlayerOnline;
 
   const onRestartGame = () => {
     ws.sendMessage(RequestActionType.RESTART_GAME);
@@ -132,7 +129,7 @@ export default function RoomPage({ params: { roomId } }: RoomPageProps) {
 
   return (
     <>
-      <GameHud isSpectator={isSpectator} onRestart={onRestartGame} />
+      <GameHud onRestart={onRestartGame} />
       <main className="flex h-[100svh] flex-col items-center justify-center">
         <Board
           player={game.state.me!}

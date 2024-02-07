@@ -32,6 +32,7 @@ type GameContextValues = {
   turnPlayer: Player;
   gameWinner: WinnerCheckerResults | null;
   isGameOver: boolean;
+  isSpectator: boolean;
 
   // Actions
   setState: Dispatch<SetStateAction<GameState>>;
@@ -59,6 +60,7 @@ const GameContext = createContext<GameContextValues>({
   turnPlayer: Player.ONE,
   gameWinner: null,
   isGameOver: false,
+  isSpectator: true,
   addPiece: () => {},
   addSpectator: () => {},
   removeSpectator: () => {},
@@ -88,6 +90,7 @@ function GameContextProvider({ children }: React.PropsWithChildren) {
   const turnPlayer: Player = (state.turn % 2) + 1;
   const gameWinner = useMemo(() => whoWon(state.slots), [state.slots]);
   const isGameOver = useMemo(() => gameWinner !== null, [gameWinner]);
+  const isSpectator = useMemo(() => state.me === null, [state.me]);
 
   // Methods/Actions
   const restartGame = () =>
@@ -184,6 +187,7 @@ function GameContextProvider({ children }: React.PropsWithChildren) {
         updateSlot,
         joinOpponent,
         leaveOpponent,
+        isSpectator,
       }}
     >
       {children}
