@@ -142,7 +142,7 @@ export default function RoomPage({ params: { roomId } }: RoomPageProps) {
           onColumnClick={onColumnClick}
         />
       </main>
-      <GameFooter showSpectators />
+      <GameFooter showSpectators showShareButton />
     </>
   );
 }

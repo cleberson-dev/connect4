@@ -1,13 +1,13 @@
 import { useGame } from "@/shared/contexts/Game.context";
-import SpectatorsCounter from "./spectators-counter";
-import ShareRoomButton from "./share-room-button";
+import SpectatorsCounter from "@/shared/components/spectators-counter";
+import ShareRoomButton from "@/shared/components/share-room-button";
 
 type Props = {
   showSpectators?: boolean;
-  showShare?: boolean;
+  showShareButton?: boolean;
 };
 
-export default function GameFooter({ showSpectators, showShare }: Props) {
+export default function GameFooter({ showSpectators, showShareButton }: Props) {
   const {
     state: { turn, spectators },
   } = useGame();
@@ -23,7 +23,7 @@ export default function GameFooter({ showSpectators, showShare }: Props) {
 
       <p className="absolute w-full text-center">Turn {turn + 1}</p>
 
-      {showShare && <ShareRoomButton onClick={shareRoom} />}
+      {showShareButton && <ShareRoomButton onClick={shareRoom} />}
     </footer>
   );
 }
