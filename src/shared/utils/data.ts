@@ -9,6 +9,8 @@ dotenv.config();
 
 const LIMIT_ROOMS = 50;
 
+const ROOMS_SET_KEY = "rooms";
+
 const redis = createClient({ password: process.env.REDIS_PASS })
   .on("error", (err: any) => {
     console.error("Redis: Connection Error");
@@ -46,7 +48,7 @@ export const saveRoom = async (room: Room) => {
   const key = getRoomKey(room.id);
 
   await (await redis).set(key, JSON.stringify(room));
-  await ds.sAdd("rooms", room.id);
+  await ds.sAdd(ROOMS_SET_KEY, room.id);
 };
 
 export const getRoom = async (roomId: string): Promise<Room | null> => {
@@ -61,12 +63,12 @@ export const getRoom = async (roomId: string): Promise<Room | null> => {
 export const removeRoom = async (roomId: string) => {
   const ds = await redis;
   await ds.del(roomId);
-  await ds.sRem("rooms", roomId);
+  await ds.sRem(ROOMS_SET_KEY, roomId);
 };
 
 export const getRoomsList = async () => {
   const ds = await redis;
-  const roomsIds = (await ds.sMembers("rooms")) as string[];
+  const roomsIds = (await ds.sMembers(ROOMS_SET_KEY)) as string[];
 
   const rooms = await Promise.all(
     roomsIds.slice(0, LIMIT_ROOMS).map((roomId) => getRoom(roomId))

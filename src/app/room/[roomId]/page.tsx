@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 import { useGame, GameState } from "@/shared/contexts/Game.context";
 import { useModal } from "@/shared/contexts/Modal.context";
@@ -10,12 +11,12 @@ import { useLoading } from "@/shared/hooks/useLoading";
 
 import Board from "@/shared/components/board";
 import GameHud from "@/shared/components/game-hud";
+import GameFooter from "@/shared/components/game-footer";
 
 import LoadingModal from "@/shared/modals/loading.modal";
 import EnterRoomPasswordModal from "@/shared/modals/enter-room-password.modal";
 
 import { RequestActionType, ResponseActionType } from "@/shared/types";
-import GameFooter from "@/shared/components/game-footer";
 
 type RoomPageProps = {
   params: {
@@ -74,7 +75,7 @@ export default function RoomPage({ params: { roomId } }: RoomPageProps) {
         break;
       }
       case ResponseActionType.ROOM_NOT_FOUND: {
-        alert("Room not found");
+        toast.error("Room not found. Try again.");
         router.replace("/");
         break;
       }
@@ -85,6 +86,7 @@ export default function RoomPage({ params: { roomId } }: RoomPageProps) {
       }
       case ResponseActionType.RESTART_GAME: {
         game.restartGame();
+        toast.info("Game restarted");
         break;
       }
       case ResponseActionType.OPPONENT_JOINED: {
@@ -106,12 +108,6 @@ export default function RoomPage({ params: { roomId } }: RoomPageProps) {
       }
     }
   }, [ws.action]);
-
-  const isEveryPlayerOnline = Object.values(game.state.players).every(
-    (player) => player.online
-  );
-  const isGamePlayable =
-    !game.isSpectator && !game.isGameOver && isEveryPlayerOnline;
 
   const onRestartGame = () => {
     ws.sendMessage(RequestActionType.RESTART_GAME);
@@ -135,7 +131,7 @@ export default function RoomPage({ params: { roomId } }: RoomPageProps) {
           player={game.state.me!}
           highlightedSlots={game.gameWinner?.coords}
           slots={game.state.slots}
-          playable={isGamePlayable}
+          playable={game.isPlayable}
           onColumnClick={onColumnClick}
         />
       </main>

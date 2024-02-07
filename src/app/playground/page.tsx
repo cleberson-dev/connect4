@@ -48,6 +48,7 @@ export default function PlaygroundPage() {
           player={game.state.me!}
           onColumnClick={onColumnClick}
           highlightedSlots={game.gameWinner?.coords}
+          showLabel
         />
       </main>
       <GameFooter />

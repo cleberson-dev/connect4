@@ -5,13 +5,12 @@ import Piece from "@/shared/components/piece";
 import { Player, Slots } from "@/shared/types";
 import { getLabelBasedOnSlotPosition } from "@/shared/utils";
 
-const isProd = process.env.NODE_ENV === "production";
-
 type BoardProps = {
   slots: Slots;
   player: Player;
   highlightedSlots?: [number, number][];
   playable?: boolean;
+  showLabel?: boolean;
   onColumnClick?: (colNumber: number) => void;
 };
 
@@ -20,7 +19,8 @@ export default function Board({
   player,
   onColumnClick,
   highlightedSlots,
-  playable = false,
+  playable,
+  showLabel,
 }: BoardProps) {
   const isColFree = (colNumber: number) => slots[colNumber].includes(null);
 
@@ -32,30 +32,28 @@ export default function Board({
   const getLabel = getLabelBasedOnSlotPosition(slots[0].length);
 
   return (
-    <>
-      <div className="bg-blue-700 rounded shadow flex gap-5 sm:gap-8 p-4 select-none">
-        {slots.map((col, colNumber) => (
-          <div
-            key={colNumber}
-            className={cls(
-              { "pointer-events-auto": playable && isColFree(colNumber) },
-              "flex flex-col group gap-3 sm:gap-6 pointer-events-none"
-            )}
-            onClick={() => onColumnClick?.(colNumber)}
-          >
-            {col.map((colPlayer, rowNumber) => (
-              <Piece
-                key={rowNumber}
-                player={colPlayer}
-                hoverable={playable && colPlayer === null}
-                hoverPlayer={player}
-                highlighted={isPieceHighlighted(colNumber, rowNumber)}
-                label={!isProd ? getLabel(colNumber, rowNumber) : ""}
-              />
-            ))}
-          </div>
-        ))}
-      </div>
-    </>
+    <div className="bg-blue-700 rounded shadow flex gap-5 sm:gap-8 p-4 select-none">
+      {slots.map((col, colNumber) => (
+        <div
+          key={colNumber}
+          className={cls(
+            { "pointer-events-auto": playable && isColFree(colNumber) },
+            "flex flex-col group gap-3 sm:gap-6 pointer-events-none"
+          )}
+          onClick={() => onColumnClick?.(colNumber)}
+        >
+          {col.map((colPlayer, rowNumber) => (
+            <Piece
+              key={rowNumber}
+              player={colPlayer}
+              hoverable={playable && colPlayer === null}
+              hoverPlayer={player}
+              highlighted={isPieceHighlighted(colNumber, rowNumber)}
+              label={showLabel ? getLabel(colNumber, rowNumber) : ""}
+            />
+          ))}
+        </div>
+      ))}
+    </div>
   );
 }
