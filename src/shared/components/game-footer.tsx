@@ -1,6 +1,6 @@
-import { useGame } from "@/shared/contexts/Game.context";
 import SpectatorsCounter from "@/shared/components/spectators-counter";
 import ShareRoomButton from "@/shared/components/share-room-button";
+import { useGameStore } from "../stores/game.store";
 
 type Props = {
   showSpectators?: boolean;
@@ -10,7 +10,7 @@ type Props = {
 export default function GameFooter({ showSpectators, showShareButton }: Props) {
   const {
     state: { turn, spectators },
-  } = useGame();
+  } = useGameStore();
 
   const shareRoom = () => {
     const url = window.location.href;
