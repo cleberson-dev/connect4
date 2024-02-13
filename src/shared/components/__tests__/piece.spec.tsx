@@ -1,17 +1,22 @@
-import { expect, test, describe } from "vitest";
+import { expect, test, describe, vi, beforeEach } from "vitest";
 import { render, screen, cleanup } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { Player } from "@/shared/types";
 import Piece from "@/shared/components/piece";
 
+const ROLE_NAME = "board-piece";
+
 describe("<Piece />", () => {
-  test("should render successfully", () => {
+  beforeEach(() => {
     cleanup();
+  });
+
+  test("should render successfully", () => {
     render(<Piece player={Player.ONE} />);
-    expect(screen.getByRole("board-piece")).toBeDefined();
+    expect(screen.getByRole(ROLE_NAME)).toBeDefined();
   });
 
   test("should render different elements for empty and non-empty pieces", () => {
-    cleanup();
     render(
       <>
         <Piece player={Player.ONE} />
@@ -19,13 +24,12 @@ describe("<Piece />", () => {
       </>
     );
 
-    const [a, b] = screen.getAllByRole("board-piece");
+    const [a, b] = screen.getAllByRole(ROLE_NAME);
 
     expect(a.nodeName).not.toBe(b.nodeName);
   });
 
   test("should render same elements for players one and two", () => {
-    cleanup();
     render(
       <>
         <Piece player={Player.ONE} />
@@ -33,8 +37,17 @@ describe("<Piece />", () => {
       </>
     );
 
-    const [a, b] = screen.getAllByRole("board-piece");
+    const [a, b] = screen.getAllByRole(ROLE_NAME);
 
     expect(a.nodeName).toBe(b.nodeName);
+  });
+
+  test("should call onClick event on click", async () => {
+    const mock = vi.fn();
+
+    render(<Piece player={Player.ONE} onClick={mock} />);
+    await userEvent.click(screen.getByRole(ROLE_NAME));
+
+    expect(mock).toHaveBeenCalledOnce();
   });
 });
