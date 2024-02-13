@@ -1,6 +1,6 @@
 import SpectatorsCounter from "@/shared/components/spectators-counter";
 import ShareRoomButton from "@/shared/components/share-room-button";
-import { useGameStore } from "../stores/game.store";
+import { useGameStore } from "@/shared/stores/game.store";
 
 type Props = {
   showSpectators?: boolean;

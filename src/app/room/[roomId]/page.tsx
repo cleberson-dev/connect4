@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 
-import { GameState } from "@/shared/contexts/Game.context";
 import { useModal } from "@/shared/contexts/Modal.context";
 import { useWebSockets } from "@/shared/hooks/useWebSockets";
 import { useLoading } from "@/shared/hooks/useLoading";
@@ -17,7 +16,7 @@ import LoadingModal from "@/shared/modals/loading.modal";
 import EnterRoomPasswordModal from "@/shared/modals/enter-room-password.modal";
 
 import { RequestActionType, ResponseActionType } from "@/shared/types";
-import { useGameStore } from "@/shared/stores/game.store";
+import { useGameStore, GameState } from "@/shared/stores/game.store";
 
 type RoomPageProps = {
   params: {

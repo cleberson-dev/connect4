@@ -1,6 +1,6 @@
 import short from "short-uuid";
 import { Player, Slots, Spectator } from "@/shared/types";
-import { GameState } from "@/shared/contexts/Game.context";
+import { GameState } from "@/shared/stores/game.store";
 
 const [COLS, ROWS] = [7, 6];
 

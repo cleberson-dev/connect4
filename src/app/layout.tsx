@@ -5,7 +5,6 @@ import "react-toastify/dist/ReactToastify.css";
 import "./globals.css";
 
 import ModalContextProvider from "@/shared/contexts/Modal.context";
-import GameContextProvider from "@/shared/contexts/Game.context";
 import QueryProvider from "@/shared/providers/query.provider";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -23,12 +22,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <QueryProvider>
-        <GameContextProvider>
-          <body className={inter.className}>
-            <ModalContextProvider>{children}</ModalContextProvider>
-            <ToastContainer />
-          </body>
-        </GameContextProvider>
+        <body className={inter.className}>
+          <ModalContextProvider>{children}</ModalContextProvider>
+          <ToastContainer />
+        </body>
       </QueryProvider>
     </html>
   );

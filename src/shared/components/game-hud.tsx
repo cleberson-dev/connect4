@@ -1,9 +1,9 @@
 import { useCallback } from "react";
 import cls from "classnames";
 
-import { useGame } from "@/shared/contexts/Game.context";
 import GameHudPlayerInfo from "@/shared/components/game-hud-player-info";
 import { Player } from "@/shared/types";
+import { useGameStore } from "@/shared/stores/game.store";
 
 const className = {
   header:
@@ -24,7 +24,7 @@ export default function GameHud({ onRestart }: GameHudProps) {
     turnPlayer,
     isGameOver,
     isSpectator,
-  } = useGame();
+  } = useGameStore();
 
   const isPlayersTurn = useCallback(
     (player: Player) => !isGameOver && player === turnPlayer,
