@@ -7,6 +7,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ invalid, className, ...props }, ref) => {
     return (
       <input
+        data-testid="input"
         ref={ref}
         className={cls(className, "p-2 bg-gray-100 rounded-md text-black", {
           "border border-solid border-red-500": invalid,
