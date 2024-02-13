@@ -63,7 +63,7 @@ const checkGame = (slots: Slots) => {
 };
 
 export const whoWon = (slots: Slots): WinnerCheckerResults | null => {
-  const [cols, rows] = [slots.length, slots[0].length];
+  const [cols, rows] = [slots.length, slots[0]?.length];
   for (let i = 0; i < cols; i += 1) {
     for (let j = 0; j < rows; j += 1) {
       const player = slots[i][j];

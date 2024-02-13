@@ -3,11 +3,12 @@ import Draggable from "react-draggable";
 import cls from "classnames";
 
 import { Player } from "@/shared/types";
-import { useGameStore } from "@/shared/stores/game.store";
+import { useComputedGame, useGameStore } from "@/shared/stores/game.store";
 
 export default function DraggableGameStateBox() {
   const [collapsed, setCollapsed] = useState(true);
-  const { state, gameWinner, turnPlayer } = useGameStore();
+  const { state } = useGameStore();
+  const { gameWinner, turnPlayer } = useComputedGame();
 
   const status =
     gameWinner === null

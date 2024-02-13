@@ -16,7 +16,11 @@ import LoadingModal from "@/shared/modals/loading.modal";
 import EnterRoomPasswordModal from "@/shared/modals/enter-room-password.modal";
 
 import { RequestActionType, ResponseActionType } from "@/shared/types";
-import { useGameStore, GameState } from "@/shared/stores/game.store";
+import {
+  useGameStore,
+  GameState,
+  useComputedGame,
+} from "@/shared/stores/game.store";
 
 type RoomPageProps = {
   params: {
@@ -30,6 +34,7 @@ export default function RoomPage({ params: { roomId } }: RoomPageProps) {
   const router = useRouter();
   const ws = useWebSockets({});
   const game = useGameStore();
+  const { turnPlayer, gameWinner, isPlayable } = useComputedGame();
 
   const modal = useModal();
   const loading = useLoading();
@@ -116,7 +121,7 @@ export default function RoomPage({ params: { roomId } }: RoomPageProps) {
 
   const onColumnClick = (colNumber: number) => {
     ws.sendMessage(RequestActionType.SET_PIECE, { colNumber });
-    game.addPiece(colNumber);
+    game.addPiece(colNumber, turnPlayer);
     game.goNextTurn();
   };
 
@@ -129,9 +134,9 @@ export default function RoomPage({ params: { roomId } }: RoomPageProps) {
       <main className="flex h-[100svh] flex-col items-center justify-center">
         <Board
           player={game.state.me!}
-          highlightedSlots={game.gameWinner?.coords}
+          highlightedSlots={gameWinner?.coords}
           slots={game.state.slots}
-          playable={game.isPlayable}
+          playable={isPlayable}
           onColumnClick={onColumnClick}
         />
       </main>

@@ -10,13 +10,14 @@ import GameFooter from "@/shared/components/game-footer";
 
 import { Player } from "@/shared/types";
 import { getNewPlaygroundGame } from "@/shared/utils";
-import { useGameStore } from "@/shared/stores/game.store";
+import { useComputedGame, useGameStore } from "@/shared/stores/game.store";
 
 const isProd = process.env.NODE_ENV === "production";
 if (isProd) redirect("/");
 
 export default function PlaygroundPage() {
   const game = useGameStore();
+  const { turnPlayer, isGameOver, gameWinner } = useComputedGame();
 
   useEffect(newGame, []);
 
@@ -31,7 +32,7 @@ export default function PlaygroundPage() {
   };
 
   const onColumnClick = (colNumber: number) => {
-    game.addPiece(colNumber);
+    game.addPiece(colNumber, turnPlayer);
     game.goNextTurn();
     toggleMe();
   };
@@ -41,11 +42,11 @@ export default function PlaygroundPage() {
       <GameHud onRestart={newGame} />
       <main className="flex h-[100svh] flex-col items-center justify-center">
         <Board
-          playable={!game.isGameOver}
+          playable={!isGameOver}
           slots={game.state.slots}
           player={game.state.me!}
           onColumnClick={onColumnClick}
-          highlightedSlots={game.gameWinner?.coords}
+          highlightedSlots={gameWinner?.coords}
           showLabel
         />
       </main>

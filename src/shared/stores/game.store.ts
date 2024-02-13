@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { produce } from "immer";
 
-import { Player, Slots, Spectator, WinnerCheckerResults } from "@/shared/types";
+import { Player, Slots, Spectator } from "@/shared/types";
 import { createFreshSlots } from "@/shared/utils";
 import { whoWon } from "@/shared/utils/game-checker";
 
@@ -20,16 +20,11 @@ export type GameState = {
 
 type State = {
   state: GameState;
-  turnPlayer: Player;
-  gameWinner: WinnerCheckerResults | null;
-  isGameOver: boolean;
-  isSpectator: boolean;
-  isPlayable: boolean;
 };
 
 type Action = {
   setState: (newState: Partial<GameState>) => void;
-  addPiece: (colNumber: number) => void;
+  addPiece: (colNumber: number, player: Player) => void;
   updateSlot: (coords: [number, number], player: Player) => void;
   goNextTurn: () => void;
   addSpectator: (spectator: Spectator) => void;
@@ -39,7 +34,7 @@ type Action = {
   leaveOpponent: () => void;
 };
 
-export const useGameStore = create<State & Action>((set, get) => {
+export const useGameStore = create<State & Action>((set) => {
   const state = {
     players: {
       [Player.ONE]: {},
@@ -50,17 +45,6 @@ export const useGameStore = create<State & Action>((set, get) => {
     turn: 0,
     me: Player.ONE,
   };
-
-  // Computed
-  const isEveryPlayerOnline = Object.values(get().state.players).every(
-    (player) => player.online
-  );
-
-  const isSpectator = get().state.me === null;
-  const turnPlayer = (get().state.turn % 2) + 1;
-  const gameWinner = whoWon(get().state.slots);
-  const isGameOver = gameWinner !== null;
-  const isPlayable = !isSpectator && !isGameOver && isEveryPlayerOnline;
 
   // Methods/Actions
   const restartGame = () =>
@@ -102,7 +86,7 @@ export const useGameStore = create<State & Action>((set, get) => {
     );
   };
 
-  const addPiece = (colNumber: number) => {
+  const addPiece = (colNumber: number, turnPlayer: Player) => {
     set(
       produce(({ state }: State) => {
         const selectedCol = state.slots[colNumber];
@@ -146,14 +130,6 @@ export const useGameStore = create<State & Action>((set, get) => {
 
   return {
     state,
-
-    // Computed
-    turnPlayer,
-    gameWinner,
-    isGameOver,
-    isSpectator,
-    isPlayable,
-
     // Methods
     addPiece,
     addSpectator,
@@ -166,3 +142,19 @@ export const useGameStore = create<State & Action>((set, get) => {
     setState,
   };
 });
+
+export const useComputedGame = () => {
+  const { state } = useGameStore();
+
+  const isEveryPlayerOnline = Object.values(state.players).every(
+    (player) => player.online
+  );
+
+  const isSpectator = state.me === null;
+  const turnPlayer = ((state.turn % 2) + 1) as Player;
+  const gameWinner = whoWon(state.slots);
+  const isGameOver = gameWinner !== null;
+  const isPlayable = !isSpectator && !isGameOver && isEveryPlayerOnline;
+
+  return { isSpectator, turnPlayer, gameWinner, isGameOver, isPlayable };
+};

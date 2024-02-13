@@ -3,7 +3,7 @@ import cls from "classnames";
 
 import GameHudPlayerInfo from "@/shared/components/game-hud-player-info";
 import { Player } from "@/shared/types";
-import { useGameStore } from "@/shared/stores/game.store";
+import { useComputedGame, useGameStore } from "@/shared/stores/game.store";
 
 const className = {
   header:
@@ -21,10 +21,9 @@ type GameHudProps = {
 export default function GameHud({ onRestart }: GameHudProps) {
   const {
     state: { players, me },
-    turnPlayer,
-    isGameOver,
-    isSpectator,
   } = useGameStore();
+
+  const { turnPlayer, isGameOver, isSpectator } = useComputedGame();
 
   const isPlayersTurn = useCallback(
     (player: Player) => !isGameOver && player === turnPlayer,
