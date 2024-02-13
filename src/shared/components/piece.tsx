@@ -47,12 +47,14 @@ export default function Piece({
 
   const isEmpty = player === null;
 
+  const role = "board-piece";
+
   // Changing only the input element type to leverage last-of-type selectors.
   return isEmpty ? (
-    <span onClick={onClick} className={className}>
+    <span role={role} onClick={onClick} className={className}>
       {label}
     </span>
   ) : (
-    <div onClick={onClick} className={className}></div>
+    <div role={role} onClick={onClick} className={className}></div>
   );
 }
