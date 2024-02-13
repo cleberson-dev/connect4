@@ -18,6 +18,7 @@ export default function ModalContainer({
 
   return (
     <div
+      data-testid="modal-container"
       className="z-50 fixed w-full h-full flex flex-col justify-center items-center backdrop-grayscale backdrop-blur-sm"
       ref={containerRef}
       onClick={containerClickHandler}
