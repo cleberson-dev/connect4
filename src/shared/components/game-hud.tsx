@@ -32,7 +32,7 @@ export default function GameHud({ onRestart }: GameHudProps) {
   );
 
   return (
-    <header className={className.header}>
+    <header className={className.header} data-testid="game-hud">
       <GameHudPlayerInfo
         player={Player.ONE}
         isCurrentPlayer={me === Player.ONE}
