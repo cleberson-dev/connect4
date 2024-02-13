@@ -18,7 +18,10 @@ export default function GameFooter({ showSpectators, showShareButton }: Props) {
   };
 
   return (
-    <footer className="fixed bottom-4 p-2 w-full flex justify-between items-center">
+    <footer
+      data-testid="game-footer"
+      className="fixed bottom-4 p-2 w-full flex justify-between items-center"
+    >
       {showSpectators && <SpectatorsCounter spectators={spectators} />}
 
       <p className="absolute w-full text-center">Turn {turn + 1}</p>
