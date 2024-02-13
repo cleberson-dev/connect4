@@ -29,7 +29,10 @@ export default function DraggableGameStateBox() {
 
   return (
     <Draggable handle="strong">
-      <div className="w-40 font-mono text-xs absolute bottom-0">
+      <div
+        className="w-40 font-mono text-xs absolute bottom-0"
+        data-testid="draggable-game-state-box"
+      >
         <strong className="block p-2 bg-slate-500 select-none text-center relative lowercase cursor-move font-normal">
           Game State
           <button
