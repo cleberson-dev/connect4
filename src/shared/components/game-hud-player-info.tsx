@@ -28,6 +28,7 @@ export default function GameHudPlayerInfo({
 
   return (
     <div
+      data-testid="game-hud-player-info"
       className={cls(
         "flex items-center gap-1 sm:gap-2 relative",
         isPlayersTurn && "text-violet-500 font-bold",
