@@ -6,6 +6,9 @@ export default defineConfig({
   plugins: [react()],
   test: {
     environment: "jsdom",
+    coverage: {
+      enabled: true,
+    },
   },
   resolve: {
     alias: {
