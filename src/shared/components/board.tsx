@@ -29,10 +29,13 @@ export default function Board({
       (coords) => coords.toString() === [colNumber, rowNumber].toString()
     );
 
-  const getLabel = getLabelBasedOnSlotPosition(slots[0].length);
+  const getLabel = getLabelBasedOnSlotPosition(slots[0]?.length);
 
   return (
-    <div className="bg-blue-700 rounded shadow flex gap-5 sm:gap-8 p-4 select-none">
+    <div
+      className="bg-blue-700 rounded shadow flex gap-5 sm:gap-8 p-4 select-none"
+      data-testid="board"
+    >
       {slots.map((col, colNumber) => (
         <div
           key={colNumber}
