@@ -4,13 +4,14 @@ import Piece from "@/shared/components/piece";
 
 import { Player, Slots } from "@/shared/types";
 import { getLabelBasedOnSlotPosition } from "@/shared/utils";
+import { useMemo } from "react";
 
 type BoardProps = {
   slots: Slots;
   player: Player;
   highlightedSlots?: [number, number][];
   playable?: boolean;
-  showLabel?: boolean;
+  showLabels?: boolean;
   onColumnClick?: (colNumber: number) => void;
 };
 
@@ -20,7 +21,7 @@ export default function Board({
   onColumnClick,
   highlightedSlots,
   playable,
-  showLabel,
+  showLabels,
 }: BoardProps) {
   const isColFree = (colNumber: number) => slots[colNumber].includes(null);
 
@@ -29,7 +30,12 @@ export default function Board({
       (coords) => coords.toString() === [colNumber, rowNumber].toString()
     );
 
-  const getLabel = getLabelBasedOnSlotPosition(slots[0]?.length);
+  const slotsRowLength = slots[0]?.length ?? 0;
+
+  const getLabel = useMemo(
+    () => getLabelBasedOnSlotPosition(slotsRowLength),
+    [slotsRowLength]
+  );
 
   return (
     <div
@@ -52,7 +58,7 @@ export default function Board({
               hoverable={playable && colPlayer === null}
               hoverPlayer={player}
               highlighted={isPieceHighlighted(colNumber, rowNumber)}
-              label={showLabel ? getLabel(colNumber, rowNumber) : ""}
+              label={showLabels ? getLabel(colNumber, rowNumber) : ""}
             />
           ))}
         </div>

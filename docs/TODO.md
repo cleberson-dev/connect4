@@ -16,8 +16,8 @@
 - [x] Add a state info card that is draggable (playground)
 - [x] Label each piece when empty (playground)
 - [x] Move to Server Actions 
+- [x] Migrate to zustand or other state management library
 - [] Add dev/debug actions to simulate events. (playground)
-- [] Migrate to zustand or other state management library
 - [] Refactor WebSocket Use (Implement a hook with context)
 - [] Add Unit tests (Components)
 - [] Add E2E Tests
