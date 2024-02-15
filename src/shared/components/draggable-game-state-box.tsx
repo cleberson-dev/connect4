@@ -4,11 +4,14 @@ import cls from "classnames";
 
 import { Player } from "@/shared/types";
 import { useComputedGame, useGameStore } from "@/shared/stores/game.store";
+import { useDevStore } from "../stores/dev.store";
 
 export default function DraggableGameStateBox() {
   const [collapsed, setCollapsed] = useState(true);
   const { state } = useGameStore();
   const { gameWinner, turnPlayer } = useComputedGame();
+
+  const { toggleShowLabels } = useDevStore();
 
   const status =
     gameWinner === null
@@ -59,7 +62,7 @@ export default function DraggableGameStateBox() {
           <hr />
 
           <button>Add Piece (Random)</button>
-          <button>Show/Hide Label</button>
+          <button onClick={toggleShowLabels}>Show/Hide Label</button>
         </div>
       </div>
     </Draggable>

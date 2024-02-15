@@ -17,9 +17,9 @@
 - [x] Label each piece when empty (playground)
 - [x] Move to Server Actions 
 - [x] Migrate to zustand or other state management library
+- [x] Add Unit tests (Components)
 - [] Add dev/debug actions to simulate events. (playground)
 - [] Refactor WebSocket Use (Implement a hook with context)
-- [] Add Unit tests (Components)
 - [] Add E2E Tests
 - [] Add Unit Tests (Server)
 - [] Find a way to enforce payload type based on action type

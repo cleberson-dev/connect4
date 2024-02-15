@@ -11,6 +11,7 @@ import GameFooter from "@/shared/components/game-footer";
 import { Player } from "@/shared/types";
 import { getNewPlaygroundGame } from "@/shared/utils";
 import { useComputedGame, useGameStore } from "@/shared/stores/game.store";
+import { useDevStore } from "@/shared/stores/dev.store";
 
 const isProd = process.env.NODE_ENV === "production";
 if (isProd) redirect("/");
@@ -18,6 +19,8 @@ if (isProd) redirect("/");
 export default function PlaygroundPage() {
   const game = useGameStore();
   const { turnPlayer, isGameOver, gameWinner } = useComputedGame();
+
+  const areLabelsShowing = useDevStore((state) => state.areLabelsShowing);
 
   useEffect(newGame, []);
 
@@ -47,7 +50,7 @@ export default function PlaygroundPage() {
           player={game.state.me!}
           highlightedSlots={gameWinner?.coords}
           onColumnClick={onColumnClick}
-          showLabels
+          showLabels={areLabelsShowing}
         />
       </main>
       <GameFooter />
