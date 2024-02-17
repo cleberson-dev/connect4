@@ -11,16 +11,16 @@ type PieceProps = {
   label?: string;
 };
 
-const hoverClassesByPlayer = {
-  [Player.ONE]:
-    "group-hover:last-of-type:bg-yellow-200 group-hover:border-yellow-500",
-  [Player.TWO]:
-    "group-hover:last-of-type:bg-red-200 group-hover:border-red-500",
-} as const;
-
 const classesByPlayer = {
-  [Player.ONE]: "bg-yellow-500",
-  [Player.TWO]: "bg-red-500",
+  [Player.ONE]: (hovered?: boolean) =>
+    cls("bg-yellow-500", {
+      "group-hover:last-of-type:bg-yellow-200 group-hover:border-yellow-500":
+        hovered,
+    }),
+  [Player.TWO]: (hovered?: boolean) =>
+    cls("bg-red-500", {
+      "group-hover:last-of-type:bg-red-200 group-hover:border-red-500": hovered,
+    }),
 } as const;
 
 const classesBySize = {
@@ -41,8 +41,9 @@ export default function Piece({
     "inline-flex border-solid border-black rounded-full font-bold justify-center items-center text-green-700",
     classesBySize[size],
     highlighted ? "border-4" : "border-3",
-    player ? classesByPlayer[player] : "bg-slate-200",
-    hoverable && hoverPlayer && hoverClassesByPlayer[hoverPlayer]
+    player
+      ? classesByPlayer[player](hoverable && !!hoverPlayer)
+      : "bg-slate-200"
   );
 
   const isEmpty = player === null;
