@@ -26,7 +26,7 @@ const GameStateBoxHandle = ({
 
 export default function DraggableGameStateBox() {
   const [collapsed, setCollapsed] = useState(true);
-  const { state } = useGameStore();
+  const { state, addPiece } = useGameStore();
   const { gameWinner, turnPlayer } = useComputedGame();
 
   const { toggleShowLabels } = useDevStore();
@@ -42,6 +42,9 @@ export default function DraggableGameStateBox() {
   const [player1, player2] = Object.values(state.players).map(getPlayerText);
 
   const piecesAdded = state.turn;
+
+  const addPieceInRandomColumn = () =>
+    addPiece(Math.floor(Math.random() * state.slots.length), state.me!);
 
   return (
     <Draggable handle="strong">
@@ -68,7 +71,7 @@ export default function DraggableGameStateBox() {
 
           <hr />
 
-          <button>Add Piece (Random)</button>
+          <button onClick={addPieceInRandomColumn}>Add Piece (Random)</button>
           <button onClick={toggleShowLabels}>Show/Hide Label</button>
         </div>
       </div>
