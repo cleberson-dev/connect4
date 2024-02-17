@@ -5,7 +5,7 @@ import { Player, Slots, Spectator } from "@/shared/types";
 import { createFreshSlots } from "@/shared/utils";
 import { whoWon } from "@/shared/utils/game-checker";
 
-type GameStatePlayer = {
+export type GameStatePlayer = {
   name?: string;
   online?: boolean;
 };

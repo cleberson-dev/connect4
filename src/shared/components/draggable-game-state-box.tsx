@@ -2,9 +2,9 @@ import { useState } from "react";
 import Draggable from "react-draggable";
 import cls from "classnames";
 
-import { Player } from "@/shared/types";
 import { useComputedGame, useGameStore } from "@/shared/stores/game.store";
-import { useDevStore } from "../stores/dev.store";
+import { useDevStore } from "@/shared/stores/dev.store";
+import { getPlayerText } from "@/shared/utils";
 
 export default function DraggableGameStateBox() {
   const [collapsed, setCollapsed] = useState(true);
@@ -21,13 +21,7 @@ export default function DraggableGameStateBox() {
   const turn = state.turn + 1;
 
   const meText = state.me === null ? "No one" : state.players[state.me].name;
-  const player1 = `${state.players[Player.ONE].name} (${
-    state.players[Player.ONE].online ? "Online" : "Offline"
-  })`;
-
-  const player2 = `${state.players[Player.TWO].name} (${
-    state.players[Player.TWO].online ? "Online" : "Offline"
-  })`;
+  const [player1, player2] = Object.values(state.players).map(getPlayerText);
 
   const piecesAdded = state.turn;
 

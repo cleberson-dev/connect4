@@ -1,6 +1,6 @@
 import short from "short-uuid";
 import { Player, Slots, Spectator } from "@/shared/types";
-import { GameState } from "@/shared/stores/game.store";
+import { GameState, GameStatePlayer } from "@/shared/stores/game.store";
 
 const [COLS, ROWS] = [7, 6];
 
@@ -48,3 +48,6 @@ export const getNewPlaygroundGame = (): GameState => ({
   ...DEFAULT_PLAYGROUND_GAME,
   slots: createFreshSlots(),
 });
+
+export const getPlayerText = (player: GameStatePlayer) =>
+  `${player.name} (${player.online ? "Online" : "Offline"})`;
