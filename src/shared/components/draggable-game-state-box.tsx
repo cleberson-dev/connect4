@@ -6,6 +6,24 @@ import { useComputedGame, useGameStore } from "@/shared/stores/game.store";
 import { useDevStore } from "@/shared/stores/dev.store";
 import { getPlayerText } from "@/shared/utils";
 
+const GameStateBoxHandle = ({
+  collapsed,
+  onCollapse,
+}: {
+  collapsed: boolean;
+  onCollapse: () => void;
+}) => (
+  <strong className="block p-2 bg-slate-500 select-none text-center relative lowercase cursor-move font-normal">
+    Game State
+    <button
+      className="absolute top-0 right-0 px-2 h-full hover:bg-black/5 transition-colors"
+      onClick={onCollapse}
+    >
+      {collapsed ? "+" : "-"}
+    </button>
+  </strong>
+);
+
 export default function DraggableGameStateBox() {
   const [collapsed, setCollapsed] = useState(true);
   const { state } = useGameStore();
@@ -13,7 +31,7 @@ export default function DraggableGameStateBox() {
 
   const { toggleShowLabels } = useDevStore();
 
-  const status =
+  const statusText =
     gameWinner === null
       ? "Playing"
       : `Won by ${state.players[gameWinner.player].name}`;
@@ -31,15 +49,10 @@ export default function DraggableGameStateBox() {
         className="w-40 font-mono text-xs absolute bottom-0"
         data-testid="draggable-game-state-box"
       >
-        <strong className="block p-2 bg-slate-500 select-none text-center relative lowercase cursor-move font-normal">
-          Game State
-          <button
-            className="absolute top-0 right-0 px-2 h-full hover:bg-black/5 transition-colors"
-            onClick={() => setCollapsed(!collapsed)}
-          >
-            {collapsed ? "+" : "-"}
-          </button>
-        </strong>
+        <GameStateBoxHandle
+          collapsed={collapsed}
+          onCollapse={() => setCollapsed(!collapsed)}
+        />
         <div
           className={cls("p-4 space-y-2 absolute bg-slate-300", {
             hidden: collapsed,
@@ -50,7 +63,7 @@ export default function DraggableGameStateBox() {
           <div>Player 2: {player2}</div>
           <div>Me: {meText}</div>
           <div>Turn Player: {state.players[turnPlayer].name}</div>
-          <div>Status: {status}</div>
+          <div>Status: {statusText}</div>
           <div>Pieces added: {piecesAdded}</div>
 
           <hr />
