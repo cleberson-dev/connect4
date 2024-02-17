@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
 import cls from "classnames";
+
+import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+
 import Input from "@/shared/components/input";
+import Button from "@/shared/components/button";
 
 const schema = yup.object({
   name: yup.string().required().min(4).max(16),
@@ -56,12 +59,9 @@ export default function EnterRoomPasswordModal({
         placeholder="Enter room's password"
         {...register("password")}
       />
-      <button
-        type="submit"
-        className="p-2 bg-blue-500 text-white rounded shadow-sm"
-      >
+      <Button type="submit" color="info">
         Enter room
-      </button>
+      </Button>
     </form>
   );
 }

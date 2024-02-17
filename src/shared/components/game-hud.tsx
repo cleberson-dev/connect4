@@ -1,18 +1,9 @@
 import { useCallback } from "react";
-import cls from "classnames";
 
 import GameHudPlayerInfo from "@/shared/components/game-hud-player-info";
 import { Player } from "@/shared/types";
 import { useComputedGame, useGameStore } from "@/shared/stores/game.store";
-
-const className = {
-  header:
-    "w-full grid grid-cols-[1fr_auto_1fr] gap-x-1 my-4 px-4 fixed top-0 text-sm sm:text-lg select-none last:text-right",
-  restartButton: (invisible?: boolean) =>
-    cls("bg-slate-300 rounded shadow-sm text-xs px-3 py-2 font-semibold", {
-      invisible,
-    }),
-};
+import Button from "@/shared/components/button";
 
 type GameHudProps = {
   onRestart: () => void;
@@ -31,7 +22,10 @@ export default function GameHud({ onRestart }: GameHudProps) {
   );
 
   return (
-    <header className={className.header} data-testid="game-hud">
+    <header
+      className="w-full grid grid-cols-[1fr_auto_1fr] gap-x-1 my-4 px-4 fixed top-0 text-sm sm:text-lg select-none last:text-right"
+      data-testid="game-hud"
+    >
       <GameHudPlayerInfo
         player={Player.ONE}
         isCurrentPlayer={me === Player.ONE}
@@ -39,12 +33,9 @@ export default function GameHud({ onRestart }: GameHudProps) {
         name={players[Player.ONE].name}
         offline={!players[Player.ONE].online}
       />
-      <button
-        onClick={onRestart}
-        className={className.restartButton(isSpectator)}
-      >
+      <Button size="small" hidden={isSpectator} onClick={onRestart}>
         Restart Game
-      </button>
+      </Button>
       <GameHudPlayerInfo
         player={Player.TWO}
         isCurrentPlayer={me === Player.TWO}

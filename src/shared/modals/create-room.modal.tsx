@@ -7,6 +7,7 @@ import { useModal } from "@/shared/contexts/Modal.context";
 import Input from "@/shared/components/input";
 
 import { createRoom } from "@/app/actions";
+import Button from "../components/button";
 
 export default function CreateRoomModal() {
   const [state, formAction] = useFormState(createRoom, null);
@@ -45,12 +46,9 @@ export default function CreateRoomModal() {
         placeholder="Enter a password for your room"
         invalid={!!state?.errors?.password}
       />
-      <button
-        className="w-full p-2 rounded shadow-sm bg-blue-500 text-white disabled:bg-slate-200 disabled:text-black disabled:opacity-50"
-        type="submit"
-      >
+      <Button color="info" type="submit">
         Create Room
-      </button>
+      </Button>
     </form>
   );
 }

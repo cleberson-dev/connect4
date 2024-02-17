@@ -12,6 +12,7 @@ import Input from "@/shared/components/input";
 
 import RoomsListModal from "@/shared/modals/rooms-list.modal";
 import CreateRoomModal from "@/shared/modals/create-room.modal";
+import Button from "@/shared/components/button";
 
 const schema = yup.object({
   name: yup.string().required().min(4).max(16),
@@ -69,18 +70,12 @@ export default function Home() {
         invalid={!!errors.name}
         {...register("name")}
       />
-      <button
-        className="p-2 rounded shadow-sm bg-blue-500 hover:bg-blue-600 transition-colors"
-        onClick={handleSubmit(openCreateRoomModal)}
-      >
+      <Button color="info" onClick={handleSubmit(openCreateRoomModal)}>
         Create Room
-      </button>
-      <button
-        className="p-2 rounded shadow-sm bg-orange-500 hover:bg-orange-600 transition-colors"
-        onClick={handleSubmit(openRoomsListModal)}
-      >
+      </Button>
+      <Button color="warning" onClick={handleSubmit(openRoomsListModal)}>
         Join Room
-      </button>
+      </Button>
     </main>
   );
 }
